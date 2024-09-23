@@ -27,7 +27,14 @@ DEBUG = True    # TODO Change for production
 
 ALLOWED_HOSTS = ["*"]   # TODO Specify host before deploying
 
-CORS_ALLOW_ALL_ORIGINS = True  # TODO Specify before deploying  
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
 
 # Application definition
 
@@ -40,9 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "rest_framework",
     "corsheaders",
-    "users",
-    "data",
-    "predictions",
+    "api",
 ]
 
 MIDDLEWARE = [
@@ -130,8 +135,5 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-}
+CORS_ALLOW_ALL_ORIGINS = True  # TODO Specify before deploying  
+CORS_ALLOWS_CREDENTIALS = True # TODO Specify before deploying
