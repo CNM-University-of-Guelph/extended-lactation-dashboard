@@ -1,6 +1,6 @@
 import { useState } from "react"
 import api from "../api"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants"
 import "../styles/LoginForm.css"
 import LoadingIndicator from "./LoadingIndicator"
@@ -20,11 +20,12 @@ function LoginForm({ route, method }) {
         try {
             const res = await api.post(route, { username, password })
             if (method === "login") {
+                // Save JWT tokens to localStorage
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-                navigate("/")
+                navigate("/")   // Navigate to Home after login
             } else {
-                navigate("/login")
+                navigate("/login")  // After registration go to login page
             }
         } catch (error) {
             alert(error)
@@ -54,6 +55,13 @@ function LoginForm({ route, method }) {
             <button className="login-form-button" type="submit">
                 {name}
             </button>
+
+            {/* Add link to registration page */}
+            {method == "login" && (
+                <p>
+                    Don't have an account? <Link to="/register">Register here</Link>
+                </p>
+            )}
         </form>
     );
 }
