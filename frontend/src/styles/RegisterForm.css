@@ -1,4 +1,4 @@
-.form-container {
+.register-form-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -10,7 +10,7 @@
     max-width: 400px;
   }
   
-  .form-input {
+  .register-form-input {
     width: 90%;
     padding: 10px;
     margin: 10px 0;
@@ -19,11 +19,11 @@
     box-sizing: border-box;
   }
   
-  .form-button {
+  .register-form-button {
     width: 95%;
     padding: 10px;
     margin: 20px 0;
-    background-color: #007bff;
+    background-color: #b1b112;
     color: white;
     border: none;
     border-radius: 4px;
@@ -31,6 +31,6 @@
     transition: background-color 0.2s ease-in-out;
   }
   
-  .form-button:hover {
-    background-color: #0056b3;
+  .register-form-button:hover {
+    background-color: #993181;
   }

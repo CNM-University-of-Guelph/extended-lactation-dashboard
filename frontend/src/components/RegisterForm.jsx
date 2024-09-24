@@ -2,10 +2,10 @@ import { useState } from "react"
 import api from "../api"
 import { useNavigate } from "react-router-dom"
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants"
-import "../styles/Form.css"
+import "../styles/RegisterForm.css"
 import LoadingIndicator from "./LoadingIndicator"
 
-function Form({ route, method }) {
+function RegisterForm({ route, method }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -34,28 +34,28 @@ function Form({ route, method }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="form-container">
+        <form onSubmit={handleSubmit} className="register-form-container">
             <h1>{name}</h1>
             <input
-                className="form-input"
+                className="register-form-input"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username"
             />
             <input
-                className="form-input"
+                className="register-form-input"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
             />
             {loading && <LoadingIndicator />}
-            <button className="form-button" type="submit">
+            <button className="register-form-button" type="submit">
                 {name}
             </button>
         </form>
     );
 }
 
-export default Form
+export default RegisterForm

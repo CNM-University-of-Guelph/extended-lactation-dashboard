@@ -6,6 +6,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User     
         fields = ["id", "username", "password"]
+        # Prevent passwords from being exposed in API
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
