@@ -1,6 +1,6 @@
 import { useState } from "react"
 import api from "../api"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants"
 import "../styles/RegisterForm.css"
 import LoadingIndicator from "./LoadingIndicator"
@@ -54,6 +54,13 @@ function RegisterForm({ route, method }) {
             <button className="register-form-button" type="submit">
                 {name}
             </button>
+
+            {/* Add link to registration page */}
+            {method == "register" && (
+                <p>
+                    Already have an account? <Link to="/login">Login here</Link>
+                </p>
+            )}
         </form>
     );
 }
