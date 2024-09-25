@@ -18,18 +18,21 @@ class CreateUserView(generics.CreateAPIView):
 
 class DataUploadView(APIView):
     parser_classes = [MultiPartParser]  # To handle file uploads
+    permission_classes = [IsAuthenticated]  # Ensure user is authenticated
 
     def post(self, request, *args, **kwargs):
         file_obj = request.FILES.get("file")
         if not file_obj:
             return Response({"message": "No file provided."}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Save the file on the server
-        uploaded_file = UploadFile.objects.create(file=file_obj)
-
-        # Process uploaded data
-        file_path = uploaded_file.file.path
         try:
+            # Save the file on the server
+            uploaded_file = UploadFile(user=request.user, file=file_obj)
+            uploaded_file.save()
+            
+            # Process uploaded data
+            file_path = uploaded_file.file.path
+
             data = pd.read_csv(file_path)
             data["New Column"] = data["Milk Yield"] * data["DIM"]
 
