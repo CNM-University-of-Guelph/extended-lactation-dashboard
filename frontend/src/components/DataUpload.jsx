@@ -35,7 +35,10 @@ function DataUpload() {
                 }
             });
 
-            setMessage("File processed successfully!")
+            // Assuming backend sends a success message
+            setMessage("File processed successfully!");
+            console.log("Processed file path:", res.data.processed_file); 
+
         } catch (error) {
             if (error.response && error.response.data) {
                 setMessage("Error: ${error.response.data.message}");
@@ -65,4 +68,4 @@ function DataUpload() {
     );
 }
 
-export default DataUpload
+export default DataUpload;
