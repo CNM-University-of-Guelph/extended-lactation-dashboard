@@ -1,3 +1,7 @@
+import os
+
+from django.conf import settings
+from django.http import FileResponse
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics, status
@@ -46,4 +50,29 @@ class DataUploadView(APIView):
 
         except Exception as e:
             return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class ListUserFilesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user_folder = os.path.join(settings.MEDIA_ROOT, f"uploads/user_{request.user.id}")
+        if os.path.exists(user_folder):
+            files = [file for file in os.listdir(user_folder) if file.endswith(".csv")]
+        else:
+            files = []
+
+        return Response({"files": files})
+       
+
+class GetUserFileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, filename, *args, **kwargs):
+        user_folder = os.path.join(settings.MEDIA_ROOT, f"uploads/user_{request.user.id}")
+        file_path = os.path.join(user_folder, filename)
+        if os.path.exists(file_path):
+            return FileResponse(open(file_path, "rb"), content_type="text/csv")
+        else:
+            return Response({"message": "File not found"}, status=status.HTTP_404_NOT_FOUND)
         
