@@ -29,6 +29,14 @@ class DataUploadView(APIView):
         if not file_obj:
             return Response({"message": "No file provided."}, status=status.HTTP_400_BAD_REQUEST)
         
+        user_folder = os.path.join(settings.MEDIA_ROOT, f"uploads/user_{request.user.id}")
+        file_path = os.path.join(user_folder, file_obj.name)
+
+        if os.path.exists(file_path):
+            return Response({
+                "message": "File already exists. Please rename the file."
+            }, status=status.HTTP_409_CONFLICT)  
+
         try:
             # Save the file on the server
             uploaded_file = UploadFile(user=request.user, file=file_obj)

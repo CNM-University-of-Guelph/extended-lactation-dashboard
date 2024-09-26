@@ -41,7 +41,7 @@ function DataUpload() {
 
         } catch (error) {
             if (error.response && error.response.data) {
-                setMessage("Error: ${error.response.data.message}");
+                setMessage(`Error: ${JSON.stringify(error.response.data.message)}`);
             } else {
                 setMessage("Error processing the file. Please try again.");
             }
