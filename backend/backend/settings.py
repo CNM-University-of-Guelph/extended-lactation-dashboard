@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+import os
 
 from pathlib import Path
 
@@ -137,3 +138,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True  # TODO Specify before deploying  
 CORS_ALLOWS_CREDENTIALS = True # TODO Specify before deploying
+
+MEDIA_URL = "/media/"   # URL where media files can be accessed
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
