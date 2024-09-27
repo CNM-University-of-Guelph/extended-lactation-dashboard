@@ -12,7 +12,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 import pandas as pd
 
-from .models import UploadFile
+from .models import UploadFile, Cow, Lactation, LactationData
 from .processing.validate import validate
 from .processing.clean import clean
 
@@ -57,17 +57,38 @@ class DataUploadView(APIView):
             validated_data = validate(data)
             primiparous_data, multiparous_data = clean(validated_data)
 
-            processed_file_path = file_path.replace(".csv", "_processed.csv")
-            multiparous_data.to_csv(processed_file_path, index=False)
+            # Store primiparous data
+            self.store_lactation_data(primiparous_data, request.user, Lactation.PRIMIPAROUS)
+
+            # Store multiparous data
+            self.store_lactation_data(multiparous_data, request.user, Lactation.MULTIPAROUS)
 
         except ValueError as e:
             return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({
-            "message": "File processed successfully!",
-            "processed_file": processed_file_path
+            "message": "File processed and data stored successfully!",
         }, status=status.HTTP_200_OK)
+    
+    def store_lactation_data(self, df: pd.DataFrame, user, parity_type: str):
+        """
+        Helper function to store lactation data in the database.
+        """
+        for _, row in df.iterrows():
+            cow, _ = Cow.objects.get_or_create(cow_id=row['Cow'], owner=user)
+            
+            lactation, _ = Lactation.objects.get_or_create(
+                cow=cow, parity=row['Parity'], parity_type=parity_type
+            )
 
+            lactation_data, created = LactationData.objects.get_or_create(
+                lactation=lactation,
+                dim=row['DIM'],
+                defaults={
+                    'date': row['Date'],
+                    'milk_yield': row['MilkTotal']
+                }
+            )
 
 
 class ListUserFilesView(APIView):
