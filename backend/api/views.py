@@ -13,6 +13,7 @@ from rest_framework.response import Response
 import pandas as pd
 
 from .models import UploadFile
+from .processing.validate import validate
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -37,27 +38,34 @@ class DataUploadView(APIView):
                 "message": "File already exists. Please rename the file."
             }, status=status.HTTP_409_CONFLICT)  
 
+        # Save and load uploaded file
         try:
-            # Save the file on the server
             uploaded_file = UploadFile(user=request.user, file=file_obj)
             uploaded_file.save()
-            
-            # Process uploaded data
             file_path = uploaded_file.file.path
-
             data = pd.read_csv(file_path)
-            data["New Column"] = data["Milk Yield"] * data["DIM"]
-
-            processed_file_path = file_path.replace(".csv", "_processed.csv")
-            data.to_csv(processed_file_path, index=False)
-
-            return Response({
-                "message": "File processed successfully!",
-                "processed_file": processed_file_path
-            }, status=status.HTTP_200_OK)
 
         except Exception as e:
+            return Response(
+                {"message": f"Error processing file: {str(e)}"}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
+        # Process uploaded file
+        try:
+            validated_data = validate(data)
+
+            processed_file_path = file_path.replace(".csv", "_processed.csv")
+            validated_data.to_csv(processed_file_path, index=False)
+
+        except ValueError as e:
             return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({
+            "message": "File processed successfully!",
+            "processed_file": processed_file_path
+        }, status=status.HTTP_200_OK)
+
 
 
 class ListUserFilesView(APIView):
