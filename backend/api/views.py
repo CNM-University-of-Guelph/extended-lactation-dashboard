@@ -14,6 +14,7 @@ import pandas as pd
 
 from .models import UploadFile
 from .processing.validate import validate
+from .processing.clean import clean
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -54,9 +55,10 @@ class DataUploadView(APIView):
         # Process uploaded file
         try:
             validated_data = validate(data)
+            primiparous_data, multiparous_data = clean(validated_data)
 
             processed_file_path = file_path.replace(".csv", "_processed.csv")
-            validated_data.to_csv(processed_file_path, index=False)
+            multiparous_data.to_csv(processed_file_path, index=False)
 
         except ValueError as e:
             return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
