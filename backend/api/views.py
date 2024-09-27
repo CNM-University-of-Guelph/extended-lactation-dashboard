@@ -54,14 +54,12 @@ class DataUploadView(APIView):
 
         # Process uploaded file
         try:
-            validated_data = validate(data)
-            primiparous_data, multiparous_data = clean(validated_data)
-
-            # Store primiparous data
-            self.store_lactation_data(primiparous_data, request.user, Lactation.PRIMIPAROUS)
-
-            # Store multiparous data
-            self.store_lactation_data(multiparous_data, request.user, Lactation.MULTIPAROUS)
+            validated_data, eligible_lactations = validate(data)
+            cleaned_data = clean(validated_data)
+            
+            self.store_lactation_data(
+                cleaned_data, eligible_lactations, request.user
+            )
 
         except ValueError as e:
             return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -70,25 +68,43 @@ class DataUploadView(APIView):
             "message": "File processed and data stored successfully!",
         }, status=status.HTTP_200_OK)
     
-    def store_lactation_data(self, df: pd.DataFrame, user, parity_type: str):
+    def store_lactation_data(
+        self, 
+        cleaned_data: pd.DataFrame, 
+        eligible_lactations: list, 
+        user
+    ):
+        """Store lactation data for eligible cows and their current and previous lactations.
+        
+        Args:
+            cleaned_data (pd.DataFrame): The full cleaned dataset.
+            eligible_lactations (list): List of tuples containing (Cow ID, Parity) for eligible lactations.
+            user: The user uploading the data.
         """
-        Helper function to store lactation data in the database.
-        """
-        for _, row in df.iterrows():
-            cow, _ = Cow.objects.get_or_create(cow_id=row['Cow'], owner=user)
+        for cow_id, parity in eligible_lactations:
+            subset = cleaned_data[(cleaned_data['Cow'] == cow_id) & 
+                                (cleaned_data['Parity'].isin([parity, parity - 1]))]
             
-            lactation, _ = Lactation.objects.get_or_create(
-                cow=cow, parity=row['Parity'], parity_type=parity_type
-            )
+            if subset.empty:
+                continue
 
-            lactation_data, created = LactationData.objects.get_or_create(
-                lactation=lactation,
-                dim=row['DIM'],
-                defaults={
-                    'date': row['Date'],
-                    'milk_yield': row['MilkTotal']
-                }
-            )
+            # Process and store each row in the subset
+            for _, row in subset.iterrows():
+                cow, _ = Cow.objects.get_or_create(cow_id=row['Cow'], owner=user)
+
+                lactation, _ = Lactation.objects.get_or_create(
+                    cow=cow, parity=row['Parity'], 
+                    parity_type=Lactation.PRIMIPAROUS if row['Parity'] == 1 else Lactation.MULTIPAROUS
+                )
+
+                LactationData.objects.get_or_create(
+                    lactation=lactation,
+                    dim=row['DIM'],
+                    defaults={
+                        'date': row['Date'],
+                        'milk_yield': row['MilkTotal']
+                    }
+                )
 
 
 class ListUserFilesView(APIView):

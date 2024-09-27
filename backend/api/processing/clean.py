@@ -44,31 +44,9 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     lactations_smoothed_outliers.loc[outlier_mask, 'MilkTotal'] = lactations_smoothed_outliers.loc[outlier_mask, 'SmoothedMilkTotal']
     columns_to_drop = ['my_residual', 'residual_sd', 'SD_ratio', 'SD_from_fitted', 'is_outlier', 'SmoothedMilkTotal']
     lactations_smoothed = lactations_smoothed_outliers.drop(columns=columns_to_drop)
+         
+    return lactations_smoothed
 
-    # Filter lactations
-    lactations_grouped = lactations_smoothed.groupby(by=["Cow", "Parity"])
-    filter_total_length = lambda group: (group["DIM"] >= 305).any()
-    lactation_300dim = lactations_grouped.filter(filter_total_length)
-    lactation_300dim = lactation_300dim[lactation_300dim["DIM"] >= 0]
-    filter_number_records = lambda group: (len(group) >= 60)
-    lactation_300dim = lactation_300dim.groupby(by=["Cow", "Parity"]).filter(filter_number_records)   
-    lactation_300dim = lactation_300dim.drop_duplicates()
-
-    # Format data for machine learning
-    lactation_features = lactation_300dim.groupby(by=["Cow", "Parity"]).apply(
-        filter_dim_lactation, dim=60, include_groups=False
-    ).reset_index()
-
-    # Split by Parity
-    multiparous = lactation_features["Parity"] != 1
-    primiparous = lactation_features["Parity"] == 1
-    multiparous_data = lactation_features[multiparous]
-    primiparous_data = lactation_features[primiparous]
-
-    print(f"Number of unique multiparous lacations: {multiparous_data["Cow"].nunique()}")
-    print(f"Number of unique primiparous lacations: {primiparous_data["Cow"].nunique()}")
-     
-    return primiparous_data, multiparous_data
 
 def find_gaps_and_calving_dates(
     group: pd.DataFrame, 
