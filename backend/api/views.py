@@ -137,6 +137,7 @@ class DataUploadView(APIView):
                 lactation = Lactation.objects.get(
                     cow__cow_id=cow_id, parity=parity
                     )
+                
             except Lactation.DoesNotExist:
                 print(f"Lactation for Cow {cow_id} and Parity {parity} not found.")
                 continue
@@ -179,26 +180,6 @@ class DataUploadView(APIView):
         else:
             print(f"Updated features for lactation {lactation}")
 
-
-        # MultiparousFeatures.objects.create(
-        #     lactation=lactation,
-        #     parity=features_df['Parity'].iloc[0],
-        #     milk_total_1_10=features_df['MilkTotal_1-10'].iloc[0],
-        #     milk_total_11_20=features_df['MilkTotal_11-20'].iloc[0],
-        #     milk_total_21_30=features_df['MilkTotal_21-30'].iloc[0],
-        #     milk_total_31_40=features_df['MilkTotal_31-40'].iloc[0],
-        #     milk_total_41_50=features_df['MilkTotal_41-50'].iloc[0],
-        #     milk_total_51_60=features_df['MilkTotal_51-60'].iloc[0],
-        #     month_sin=features_df['Month_sin'].iloc[0],
-        #     month_cos=features_df['Month_cos'].iloc[0],
-        #     prev_persistency=features_df['prev_persistency'].iloc[0],
-        #     prev_lactation_length=features_df['prev_lactation_length'].iloc[0],
-        #     prev_days_to_peak=features_df['prev_days_to_peak'].iloc[0],
-        #     prev_305_my=features_df['prev_305_my'].iloc[0],
-        #     persistency=features_df['persistency'].iloc[0],
-        #     days_to_peak=features_df['days_to_peak'].iloc[0],
-        #     predicted_305_my=features_df['predicted_305_my'].iloc[0],
-        # )
 
 class ListUserFilesView(APIView):
     permission_classes = [IsAuthenticated]

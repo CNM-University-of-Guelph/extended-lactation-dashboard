@@ -7,6 +7,10 @@ import numpy as np
 import pandas as pd
 import sklearn.preprocessing
 
+
+pd.options.mode.chained_assignment = None
+
+
 def multi_feature_construction(
     current_lactation: pd.DataFrame, 
     previous_lactation: pd.DataFrame
@@ -29,6 +33,10 @@ def multi_feature_construction(
     features.replace([np.inf, -np.inf], np.nan, inplace=True)
     features = features.dropna()
 
+    if features.empty:
+        # Error handling is setup in DataUploadView
+        return features
+
     # Fit Dijkstra (60 DIM + Previous d305 MY)
     current_persistency = features.apply(
         calculate_current_persistency, axis=1, args=(current_lactation,)
@@ -37,20 +45,21 @@ def multi_feature_construction(
     features.replace([np.inf, -np.inf], np.nan, inplace=True)
     features = features.dropna()
 
-    # MinMax Scaling # TODO activate after testing the pipeline is working properly
+    if features.empty:
+        # Error handling is setup in DataUploadView
+        return features
+
+    # MinMax Scaling
     features = features.drop(columns={"Cow"})
-    # cow_id = features.pop("Cow")
-    # month_cos = features.pop("Month_cos")
-    # month_sin = features.pop("Month_sin")
+    month_cos = features.pop("Month_cos")
+    month_sin = features.pop("Month_sin")
 
-    # scaler = sklearn.preprocessing.MinMaxScaler(feature_range=(-1, 1))
-    # scaled_data = scaler.fit_transform(features)
-    # scaled_dataset = pd.DataFrame(scaled_data, columns=features.columns)
-    # scaled_dataset.insert(0, "Cow", cow_id.values)
-    # scaled_dataset["Month_sin"] = month_sin.values
-    # scaled_dataset["Month_cos"] = month_cos.values
-
-    return features
+    scaler = sklearn.preprocessing.MinMaxScaler(feature_range=(0, 1))
+    scaled_data = scaler.fit_transform(features)
+    scaled_dataset = pd.DataFrame(scaled_data, columns=features.columns)
+    scaled_dataset["Month_sin"] = month_sin.values
+    scaled_dataset["Month_cos"] = month_cos.values
+    return scaled_dataset
 
 
 def transform_10d_averages(df: pd.DataFrame, dim: int) -> pd.DataFrame:
@@ -69,14 +78,15 @@ def transform_10d_averages(df: pd.DataFrame, dim: int) -> pd.DataFrame:
     bins_1_to_dim = np.arange(0, (dim + 1), 10)
     labels_1_to_dim = [f'{i+1}-{i+10}' for i in range(0, dim, 10)]
     daily_data_1_to_dim['DIM_bin'] = pd.cut(daily_data_1_to_dim['DIM'], bins=bins_1_to_dim, labels=labels_1_to_dim, right=False)
-    grouped_data_1_to_dim = daily_data_1_to_dim.groupby(['Cow', 'Parity', 'DIM_bin']).agg({
+    grouped_data_1_to_dim = daily_data_1_to_dim.groupby(['Cow', 'Parity', 'DIM_bin'], observed=False).agg({
         'MilkTotal': 'mean',
     }).reset_index()
 
     # Pivot the data to a wide format
-    pivot_data_1_to_dim = grouped_data_1_to_dim.pivot_table(index=['Cow', 'Parity'],
-                                                        columns='DIM_bin',
-                                                        values=['MilkTotal']
+    pivot_data_1_to_dim = grouped_data_1_to_dim.pivot_table(index=['Cow', 'Parity'], 
+                                                            observed=False,
+                                                            columns='DIM_bin',
+                                                            values=['MilkTotal']
                                                         )
     pivot_data_1_to_dim.columns = ['{}_{}'.format(col[0], col[1]) for col in pivot_data_1_to_dim.columns]
     pivot_data_1_to_dim.reset_index(inplace=True)
@@ -178,7 +188,7 @@ def calculate_persistency(my_end, py, t_end, pt):
 
 def calculate_current_persistency(row, current_lactation):
     cow = row["Cow"]
-    parity = row["Parity"]
+    parity = row["Parity"]    
     data = current_lactation[(current_lactation["Cow"] == cow) &
                              (current_lactation["Parity"] == parity) & 
                              (current_lactation["DIM"] <= 60)]
