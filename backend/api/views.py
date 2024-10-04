@@ -12,7 +12,10 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 import pandas as pd
 
-from .models import UploadFile
+from .models import UploadFile, Cow, Lactation, LactationData, MultiparousFeatures
+from .processing.validate import validate
+from .processing.clean import clean
+from .processing.multi_features import multi_feature_construction
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -37,27 +40,145 @@ class DataUploadView(APIView):
                 "message": "File already exists. Please rename the file."
             }, status=status.HTTP_409_CONFLICT)  
 
+        # Save and load uploaded file
         try:
-            # Save the file on the server
             uploaded_file = UploadFile(user=request.user, file=file_obj)
             uploaded_file.save()
-            
-            # Process uploaded data
             file_path = uploaded_file.file.path
-
             data = pd.read_csv(file_path)
-            data["New Column"] = data["Milk Yield"] * data["DIM"]
-
-            processed_file_path = file_path.replace(".csv", "_processed.csv")
-            data.to_csv(processed_file_path, index=False)
-
-            return Response({
-                "message": "File processed successfully!",
-                "processed_file": processed_file_path
-            }, status=status.HTTP_200_OK)
 
         except Exception as e:
+            return Response(
+                {"message": f"Error processing file: {str(e)}"}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
+        # Process uploaded file
+        try:
+            validated_data, eligible_lactations = validate(data)
+            cleaned_data = clean(validated_data)
+            
+            self.store_lactation_data(
+                cleaned_data, eligible_lactations, request.user
+            )
+
+            self.create_input_features(
+                eligible_lactations, cleaned_data
+            )
+
+        except ValueError as e:
             return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({
+            "message": "File processed and data stored successfully!",
+        }, status=status.HTTP_200_OK)
+    
+    def store_lactation_data(
+        self, 
+        cleaned_data: pd.DataFrame, 
+        eligible_lactations: list, 
+        user
+    ):
+        """Store lactation data for eligible cows and their current and previous lactations.
+        
+        Args:
+            cleaned_data (pd.DataFrame): The full cleaned dataset.
+            eligible_lactations (list): List of tuples containing (Cow ID, Parity) for eligible lactations.
+            user: The user uploading the data.
+        """
+        for cow_id, parity in eligible_lactations:
+            subset = cleaned_data[(cleaned_data['Cow'] == cow_id) & 
+                                (cleaned_data['Parity'].isin([parity, parity - 1]))]
+            
+            if subset.empty:
+                continue
+
+            # Process and store each row in the subset
+            for _, row in subset.iterrows():
+                cow, _ = Cow.objects.get_or_create(cow_id=row['Cow'], owner=user)
+
+                lactation, _ = Lactation.objects.get_or_create(
+                    cow=cow, parity=row['Parity'], 
+                    parity_type=Lactation.PRIMIPAROUS if row['Parity'] == 1 else Lactation.MULTIPAROUS
+                )
+
+                LactationData.objects.get_or_create(
+                    lactation=lactation,
+                    dim=row['DIM'],
+                    defaults={
+                        'date': row['Date'],
+                        'milk_yield': row['MilkTotal']
+                    }
+                )
+
+    def create_input_features(self, eligible_lactations: list, cleaned_data: pd.DataFrame):
+        for cow_id, parity in eligible_lactations:
+            current_lactation = cleaned_data[
+                (cleaned_data['Cow'] == cow_id) & (cleaned_data['Parity'] == parity)
+                ]
+        
+            previous_lactation = cleaned_data[
+                (cleaned_data['Cow'] == cow_id) & (cleaned_data['Parity'] == parity - 1)
+                ]
+        
+            # Skip if no current lactation data exists
+            if current_lactation.empty:
+                print(f"No data for current lactation of Cow {cow_id}, Parity {parity}")
+                continue
+
+            features = multi_feature_construction(
+                current_lactation, previous_lactation
+                )
+            if features.empty:
+                print(f"Features for Cow {cow_id} and Parity {parity} is empty.")
+                continue
+
+            try:
+                lactation = Lactation.objects.get(
+                    cow__cow_id=cow_id, parity=parity
+                    )
+                
+            except Lactation.DoesNotExist:
+                print(f"Lactation for Cow {cow_id} and Parity {parity} not found.")
+                continue
+            
+            self.store_features(lactation, features)
+
+            
+    def store_features(self, lactation, features_df: pd.DataFrame):
+        """
+        Store the multiparous features for a given lactation.
+
+        Args:
+            lactation: The Lactation object.
+            features_df: A DataFrame containing the calculated features.
+        """
+        features, created = MultiparousFeatures.objects.update_or_create(
+            lactation=lactation,
+            defaults={
+                'parity': features_df['Parity'].iloc[0],
+                'milk_total_1_10': features_df['MilkTotal_1-10'].iloc[0],
+                'milk_total_11_20': features_df['MilkTotal_11-20'].iloc[0],
+                'milk_total_21_30': features_df['MilkTotal_21-30'].iloc[0],
+                'milk_total_31_40': features_df['MilkTotal_31-40'].iloc[0],
+                'milk_total_41_50': features_df['MilkTotal_41-50'].iloc[0],
+                'milk_total_51_60': features_df['MilkTotal_51-60'].iloc[0],
+                'month_sin': features_df['Month_sin'].iloc[0],
+                'month_cos': features_df['Month_cos'].iloc[0],
+                'prev_persistency': features_df['prev_persistency'].iloc[0],
+                'prev_lactation_length': features_df['prev_lactation_length'].iloc[0],
+                'prev_days_to_peak': features_df['prev_days_to_peak'].iloc[0],
+                'prev_305_my': features_df['prev_305_my'].iloc[0],
+                'persistency': features_df['persistency'].iloc[0],
+                'days_to_peak': features_df['days_to_peak'].iloc[0],
+                'predicted_305_my': features_df['predicted_305_my'].iloc[0],
+            }
+        )
+
+        if created:
+            print(f"Created new features for lactation {lactation}")
+        else:
+            print(f"Updated features for lactation {lactation}")
 
 
 class ListUserFilesView(APIView):
