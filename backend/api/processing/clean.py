@@ -242,9 +242,6 @@ def smooth_impute_plot(group: pd.DataFrame,
     else:
         group.loc[:, smoothed_column] = y
     
-    output_folder = os.path.join(output_folder, f'loess_smoothing_{y_column}')
-    os.makedirs(output_folder, exist_ok=True)
-
     return group
 
 
