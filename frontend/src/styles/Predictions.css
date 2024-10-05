@@ -1,6 +1,6 @@
 /* Style for the cards container */
 .cards-container {
-    margin-left: 320px;
+    margin-left: 340px;
     margin-top: 40px;
     height: calc(100vh - 150px); /* Fill the remaining height */
     overflow-y: auto;

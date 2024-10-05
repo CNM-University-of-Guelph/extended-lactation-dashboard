@@ -4,22 +4,60 @@
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  /* Add a slight shadow */
     padding: 20px;  /* Padding inside the card */
     margin: 10px 0;  /* Space between each card */
-    width: 100%;  /* Full width for responsiveness */
-    max-width: 400px;  /* Set a max width to limit card size */
+    width: 95%;  /* Full width for responsiveness */
+    transition: max-height 0.5s ease-in-out;  /* Smooth expansion */
+    overflow: hidden;  /* Hide overflow when collapsed */
 }
 
-.prediction-card h3 {
-    margin: 0 0 10px;  /* Space below the title */
-    color: #333;  /* Dark text color */
+.prediction-card.expanded {
+    max-height: 500px;  /* Adjust based on how much content the expanded card will have */
 }
 
-.prediction-card p {
-    margin: 5px 0;  /* Space between paragraphs */
-    color: #555;  /* Slightly lighter text for descriptions */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.prediction-card .predicted-value {
-    font-weight: bold;  /* Highlight the predicted value */
-    font-size: 1.2em;  /* Make it slightly larger */
-    color: #1a73e8;  /* Blue color to make it stand out */
+.cow-info h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5em; /* Larger font for prominence */
+}
+
+.cow-info p {
+    margin: 0;
+    color: #555;
+}
+
+.expand-button {
+    background-color: #1E3A8A;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.expand-button:hover {
+    background-color: #14274A;
+}
+
+.predicted-value {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #1a73e8;
+    margin-top: 10px;
+}
+
+/* Expanded content section */
+.expanded-content {
+    margin-top: 20px;
+}
+
+.expanded-content img {
+    width: 100%;
+    height: auto;
+    max-height: 300px;  /* Limit the height of the placeholder graph */
+    border-radius: 5px;
 }
