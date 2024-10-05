@@ -1,41 +1,49 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import "../styles/FilterPredictions.css"
 
-function FilterPredictions({ cowIdFilter, setCowIdFilter, parityFilter, setParityFilter }) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
+function FilterPredictions({ cowIdFilter, setCowIdFilter, parityFilter, setParityFilter, onToggleFilter }) {
+    const [isHidden, setIsHidden] = useState(false);
 
     const toggleFilter = () => {
-        setIsCollapsed(!isCollapsed);
+        setIsHidden(!isHidden);
+        onToggleFilter(!isHidden);  // Notify the parent about filter state change
     };   
 
     return (
-        <div className="filter-container" style={{ maxHeight: isCollapsed ? '50px' : '1000px' }}>
-            <button className="collapse-button" onClick={toggleFilter}>
-                {isCollapsed ? 'Show Filter' : 'Hide Filter'}
-            </button>
+        <>
+            <div className={`filter-container ${isHidden ? 'hide' : ''}`}>
+                <button className="collapse-button" onClick={toggleFilter}>
+                    {isHidden ? 'Show Filter' : 'Hide Filter'}
+                </button>
 
-            {!isCollapsed && (
-                <>
-                    <label htmlFor="cowId">Filter by Cow ID:</label>
-                    <input
-                        type="text"
-                        id="cowId"
-                        value={cowIdFilter}
-                        onChange={(e) => setCowIdFilter(e.target.value)}
-                        placeholder="Enter Cow ID"
-                    />
+                {!isHidden && (
+                    <>
+                        <label htmlFor="cowId">Filter by Cow ID:</label>
+                        <input
+                            type="text"
+                            id="cowId"
+                            value={cowIdFilter}
+                            onChange={(e) => setCowIdFilter(e.target.value)}
+                            placeholder="Enter Cow ID"
+                        />
 
-                    <label htmlFor="parity">Filter by Parity:</label>
-                    <input
-                        type="number"
-                        id="parity"
-                        value={parityFilter}
-                        onChange={(e) => setParityFilter(e.target.value)}
-                        placeholder="Enter Parity"
-                    />
-                </>
-            )}
-        </div>
+                        <label htmlFor="parity">Filter by Parity:</label>
+                        <input
+                            type="number"
+                            id="parity"
+                            value={parityFilter}
+                            onChange={(e) => setParityFilter(e.target.value)}
+                            placeholder="Enter Parity"
+                        />
+                    </>
+                )}
+            </div>
+
+            {/* Add the tab to bring back the filter */}
+            <div className={`tab ${isHidden ? '' : 'hide'}`} onClick={toggleFilter}>
+                Show Filter
+            </div>
+        </>
     );
 }
 

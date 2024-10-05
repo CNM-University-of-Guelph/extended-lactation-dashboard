@@ -11,6 +11,13 @@ function Predictions() {
     const [cowIdFilter, setCowIdFilter] = useState('');
     const [parityFilter, setParityFilter] = useState('');
 
+    const [isFilterHidden, setIsFilterHidden] = useState(false);
+   
+    // Handle the filter state change from the child component
+    const handleToggleFilter = (isHidden) => {
+        setIsFilterHidden(isHidden);
+    };
+
     // Fetch all predictions from backend
     useEffect(() => {
         api.get('api/predictions/')
@@ -33,16 +40,6 @@ function Predictions() {
         setFilteredPredictions(filtered);
     }, [cowIdFilter, parityFilter, predictions]);
 
-    // Control scrolling
-    useEffect(() => {
-        document.body.classList.add('predictions-page');
-        
-        return () => {
-            document.body.classList.remove('predictions-page');
-        };
-    }, []);
-
-
     return (
         <div>
             <Navbar />
@@ -52,8 +49,9 @@ function Predictions() {
                 setCowIdFilter={setCowIdFilter}
                 parityFilter={parityFilter}
                 setParityFilter={setParityFilter}
+                onToggleFilter={handleToggleFilter}
             />
-            <div className="cards-container">
+            <div className={`cards-container ${isFilterHidden ? 'expand' : ''}`}>
                 {filteredPredictions.length > 0 ? (
                     filteredPredictions.map(prediction => (
                         <PredictionCard

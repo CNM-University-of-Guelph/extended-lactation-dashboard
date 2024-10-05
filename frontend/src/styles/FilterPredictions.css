@@ -1,16 +1,24 @@
 .filter-container {
-    position: -webkit-sticky; /* Safari */
-    position: sticky;
-    top: 80px; /* Ensure it stays below the navbar */
-    z-index: 1000; /* Keep the filter on top of other elements */
+    position: fixed;
+    top: 80px;
+    left: 0;
+    z-index: 1000;
     background-color: #f5f5f5;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    width: 90%;
-    max-width: 800px;
-    transition: max-height 0.3s ease; /* Smooth transition for collapse/expand */
+    width: 300px;
+    max-width: 300px;
+    transition: transform 0.5s ease-in-out, width 0.5s ease-in-out; /* Smooth sliding and resizing */
+}
+
+.filter-container.hide {
+    transform: translateX(-100%); /* Slide the component off the screen */
+}
+
+/* Show the tab when the filter is hidden */
+.filter-container.hide + .tab {
+    transform: translateX(0); /* Slide the tab into view */
 }
 
 .filter-container label {
@@ -54,15 +62,9 @@
     background-color: #14274A;   /* Darker blue on hover */
 }
 
-.cards-container {
-    height: calc(100vh - 150px); /* Make sure the cards container fills the viewport minus filter and navbar */
-    overflow-y: auto; /* Enable vertical scrolling */
-    padding: 20px;
-}
-
 /* Style for the collapse button */
 .collapse-button {
-    background-color: #1E3A8A; /* Button color */
+    background-color: #1E3A8A;
     color: white;
     padding: 10px;
     border: none;
@@ -73,4 +75,20 @@
 
 .collapse-button:hover {
     background-color: #14274A; /* Darker blue on hover */
+}
+
+/* Tab for bringing back the filter */
+.tab {
+    position: fixed;
+    top: 80px;
+    left: 0; /* Start at the left edge */
+    background-color: #1E3A8A;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 1001; /* Ensure the tab is on top */
+    transform: translateX(-100%); /* Hidden with the filter initially */
+    transition: transform 0.5s ease-in-out;
 }
