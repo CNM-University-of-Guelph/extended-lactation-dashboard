@@ -9,6 +9,7 @@ class UploadFile(models.Model):
     file = models.FileField(upload_to=user_directory_path)   # Store files in a folder called uploads
     upload_time = models.DateTimeField(auto_now_add=True)
     
+
 class Cow(models.Model):
     cow_id = models.CharField(max_length=20)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -71,4 +72,14 @@ class MultiparousFeatures(models.Model):
 
     def __str__(self):
         return f"Features for {self.lactation.cow.cow_id} - Parity {self.lactation.parity}"
+    
+
+class Prediction(models.Model):
+    lactation = models.ForeignKey(Lactation, on_delete=models.CASCADE)
+    prediction_type = models.CharField(max_length=50, default="regression")
+    prediction_value = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Prediction for {self.lactation.cow.cow_id} - Parity {self.lactation.parity}"
     

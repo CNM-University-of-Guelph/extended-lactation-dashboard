@@ -49,17 +49,21 @@ def multi_feature_construction(
         # Error handling is setup in DataUploadView
         return features
 
+    # TODO Save the scaler for the dataset and load here. MinMax scaling a single 
+    # row makes all values 0.
     # MinMax Scaling
     features = features.drop(columns={"Cow"})
-    month_cos = features.pop("Month_cos")
-    month_sin = features.pop("Month_sin")
+    # month_cos = features.pop("Month_cos")
+    # month_sin = features.pop("Month_sin")
 
-    scaler = sklearn.preprocessing.MinMaxScaler(feature_range=(0, 1))
-    scaled_data = scaler.fit_transform(features)
-    scaled_dataset = pd.DataFrame(scaled_data, columns=features.columns)
-    scaled_dataset["Month_sin"] = month_sin.values
-    scaled_dataset["Month_cos"] = month_cos.values
-    return scaled_dataset
+
+    # scaler = sklearn.preprocessing.MinMaxScaler(feature_range=(0, 1))
+    # scaled_data = scaler.fit_transform(features)
+    # scaled_dataset = pd.DataFrame(scaled_data, columns=features.columns)
+    # scaled_dataset["Month_sin"] = month_sin.values
+    # scaled_dataset["Month_cos"] = month_cos.values
+    # return scaled_dataset
+    return features 
 
 
 def transform_10d_averages(df: pd.DataFrame, dim: int) -> pd.DataFrame:

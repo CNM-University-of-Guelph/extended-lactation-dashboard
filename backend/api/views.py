@@ -1,3 +1,4 @@
+import logging
 import os
 
 from django.conf import settings
@@ -10,9 +11,11 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+import numpy as np
 import pandas as pd
+import joblib
 
-from .models import UploadFile, Cow, Lactation, LactationData, MultiparousFeatures
+from .models import UploadFile, Cow, Lactation, LactationData, MultiparousFeatures, Prediction
 from .processing.validate import validate
 from .processing.clean import clean
 from .processing.multi_features import multi_feature_construction
@@ -66,11 +69,13 @@ class DataUploadView(APIView):
                 eligible_lactations, cleaned_data
             )
 
+            self.make_prediction(eligible_lactations)
+
         except ValueError as e:
             return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({
-            "message": "File processed and data stored successfully!",
+            "message": "File processed and data stored successfully! Predictions have been made!",
         }, status=status.HTTP_200_OK)
     
     def store_lactation_data(
@@ -143,7 +148,6 @@ class DataUploadView(APIView):
                 continue
             
             self.store_features(lactation, features)
-
             
     def store_features(self, lactation, features_df: pd.DataFrame):
         """
@@ -180,6 +184,84 @@ class DataUploadView(APIView):
         else:
             print(f"Updated features for lactation {lactation}")
 
+    def load_model(self, parity_type):
+        models_dir = os.path.join(settings.BASE_DIR, "api/ml_models")
+        if parity_type == Lactation.PRIMIPAROUS:
+            pass
+        elif parity_type == Lactation.MULTIPAROUS:
+            model_path = os.path.join(models_dir, "SVR_multiparous.sav")
+        else:
+            raise ValueError(
+                f"load_models got an unexpected parity type: {parity_type}"
+                )
+        model = joblib.load(model_path)
+        return model
+
+    def get_input_features(self, lactation):
+        try:
+            features = MultiparousFeatures.objects.get(lactation=lactation)
+            feature_values = [
+                features.parity,
+                features.milk_total_1_10,
+                features.milk_total_11_20,
+                features.milk_total_21_30,
+                features.milk_total_31_40,
+                features.milk_total_41_50,
+                features.milk_total_51_60,
+                features.prev_persistency,
+                features.prev_lactation_length,
+                features.prev_days_to_peak,
+                features.prev_305_my,
+                features.persistency,
+                features.days_to_peak,
+                features.predicted_305_my,
+                features.month_sin,
+                features.month_cos
+            ]
+            return np.array(feature_values).reshape(1, -1)
+
+        except MultiparousFeatures.DoesNotExist:
+            print(f"No features found for Lactation {lactation}. Skipping...")
+            return None
+
+    def store_prediction(slef, lactation, prediction):
+        """
+        Store the prediction in the database.
+
+        Args:
+            lactation: The Lactation object for which the prediction is made.
+            prediction: The predicted value.
+        """
+        Prediction.objects.create(
+            lactation=lactation,
+            prediction_type='regression',
+            prediction_value=prediction
+        )
+
+    def make_prediction(self, eligible_lactations):
+        """
+        Iterate over eligible lactations, load the correct model, retrieve the input features, 
+        make the prediction, and store the result.
+
+        Args:
+            eligible_lactations: List of (Cow ID, Parity) tuples for eligible lactations.
+        """
+        for cow_id, parity in eligible_lactations:
+            try:
+                lactation = Lactation.objects.get(cow__cow_id=cow_id, parity=parity)
+                model = self.load_model(lactation.parity_type)
+                input_features = self.get_input_features(lactation)
+
+                if input_features is None:
+                    continue
+                
+                prediction = model.predict(input_features)[0]
+                self.store_prediction(lactation, prediction)
+
+            except Lactation.DoesNotExist:
+                print(f"Lactation for Cow {cow_id}, Parity {parity} not found.")
+                continue
+
 
 class ListUserFilesView(APIView):
     permission_classes = [IsAuthenticated]
@@ -205,3 +287,24 @@ class GetUserFileView(APIView):
         else:
             return Response({"message": "File not found"}, status=status.HTTP_404_NOT_FOUND)
         
+
+class PredictionsListView(APIView):
+    # permission_classes = [AllowAny]
+
+    def get(self, request):
+        logging.info("Predictions API called")
+        predictions = Prediction.objects.all().select_related("lactation__cow")
+
+        if not predictions.exists():
+            logging.info("No predictions found")
+
+        data = []
+        for prediction in predictions:
+            data.append({
+                "cow_id": prediction.lactation.cow.cow_id,
+                "parity": prediction.lactation.parity,
+                "predicted_value": prediction.prediction_value
+            })
+        logging.info(f"Returning {len(data)} predictions")
+        return Response(data, status=status.HTTP_200_OK)
+    
