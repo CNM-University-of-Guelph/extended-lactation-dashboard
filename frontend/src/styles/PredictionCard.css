@@ -1,25 +1,71 @@
 .prediction-card {
-    background-color: #18abd0; /* Light background for the card */
-    border-radius: 8px;  /* Rounded corners */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  /* Add a slight shadow */
-    padding: 20px;  /* Padding inside the card */
-    margin: 10px 0;  /* Space between each card */
-    width: 100%;  /* Full width for responsiveness */
-    max-width: 400px;  /* Set a max width to limit card size */
+    background-color: #18abd0;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 10px 0;
+    width: 95%;
+    max-height: 120px; /* Collapsed height */
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out; /* Smooth height transition */
+}
+.prediction-card.expanded {
+    max-height: 500px;  /* Adjust based on how much content the expanded card will have */
 }
 
-.prediction-card h3 {
-    margin: 0 0 10px;  /* Space below the title */
-    color: #333;  /* Dark text color */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.prediction-card p {
-    margin: 5px 0;  /* Space between paragraphs */
-    color: #555;  /* Slightly lighter text for descriptions */
+.cow-info h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5em; /* Larger font for prominence */
 }
 
-.prediction-card .predicted-value {
-    font-weight: bold;  /* Highlight the predicted value */
-    font-size: 1.2em;  /* Make it slightly larger */
-    color: #1a73e8;  /* Blue color to make it stand out */
+.cow-info p {
+    margin: 0;
+    color: #555;
+}
+
+.expand-button {
+    background-color: #1E3A8A;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.expand-button:hover {
+    background-color: #14274A;
+}
+
+.predicted-value {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #1a73e8;
+    margin-top: 10px;
+}
+
+/* Expanded content section */
+.expanded-content {
+    margin-top: 20px;
+    opacity: 0;
+    max-height: 0; /* Hide content initially */
+    transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
+}
+
+.prediction-card.expanded .expanded-content {
+    opacity: 1;
+    max-height: 300px; /* Adjust height to show content */
+}
+
+.expanded-content img {
+    width: 100%;
+    height: auto;
+    max-height: 300px;  /* Limit the height of the placeholder graph */
+    border-radius: 5px;
 }

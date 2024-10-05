@@ -1,0 +1,14 @@
+/* Style for the cards container */
+.cards-container {
+    margin-left: 340px;
+    margin-top: 40px;
+    height: calc(100vh - 150px); /* Fill the remaining height */
+    overflow-y: auto;
+    padding: 20px;
+    transition: margin-left 0.5s ease-in-out; /* Smooth resizing */
+}
+
+/* Expand the cards container when the filter is hidden */
+.cards-container.expand {
+    margin-left: 20px; /* Shrink the left margin to fill more space */
+}
