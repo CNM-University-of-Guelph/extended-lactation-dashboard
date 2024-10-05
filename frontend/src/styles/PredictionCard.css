@@ -1,14 +1,14 @@
 .prediction-card {
-    background-color: #18abd0; /* Light background for the card */
-    border-radius: 8px;  /* Rounded corners */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  /* Add a slight shadow */
-    padding: 20px;  /* Padding inside the card */
-    margin: 10px 0;  /* Space between each card */
-    width: 95%;  /* Full width for responsiveness */
-    transition: max-height 0.5s ease-in-out;  /* Smooth expansion */
-    overflow: hidden;  /* Hide overflow when collapsed */
+    background-color: #18abd0;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 10px 0;
+    width: 95%;
+    max-height: 120px; /* Collapsed height */
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out; /* Smooth height transition */
 }
-
 .prediction-card.expanded {
     max-height: 500px;  /* Adjust based on how much content the expanded card will have */
 }
@@ -53,6 +53,14 @@
 /* Expanded content section */
 .expanded-content {
     margin-top: 20px;
+    opacity: 0;
+    max-height: 0; /* Hide content initially */
+    transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
+}
+
+.prediction-card.expanded .expanded-content {
+    opacity: 1;
+    max-height: 300px; /* Adjust height to show content */
 }
 
 .expanded-content img {

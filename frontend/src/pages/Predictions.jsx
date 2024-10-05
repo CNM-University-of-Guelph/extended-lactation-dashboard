@@ -12,10 +12,15 @@ function Predictions() {
     const [parityFilter, setParityFilter] = useState('');
 
     const [isFilterHidden, setIsFilterHidden] = useState(false);
-   
+    const [isExpandedAll, setIsExpandedAll] = useState(false);
+
     // Handle the filter state change from the child component
     const handleToggleFilter = (isHidden) => {
         setIsFilterHidden(isHidden);
+    };
+
+    const toggleExpandAllCards = (expandAll) => {
+        setIsExpandedAll(expandAll);
     };
 
     // Fetch all predictions from backend
@@ -50,6 +55,7 @@ function Predictions() {
                 parityFilter={parityFilter}
                 setParityFilter={setParityFilter}
                 onToggleFilter={handleToggleFilter}
+                toggleExpandAllCards={toggleExpandAllCards}
             />
             <div className={`cards-container ${isFilterHidden ? 'expand' : ''}`}>
                 {filteredPredictions.length > 0 ? (
@@ -59,6 +65,7 @@ function Predictions() {
                             cowId={prediction.cow_id}
                             parity={prediction.parity}
                             predictedValue={prediction.predicted_value}
+                            isExpandedAll={isExpandedAll}
                         />
                     ))
                 ) : (
