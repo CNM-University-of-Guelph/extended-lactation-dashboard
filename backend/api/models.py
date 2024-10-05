@@ -80,6 +80,9 @@ class Prediction(models.Model):
     prediction_value = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ("lactation", "prediction_type")
+
     def __str__(self):
         return f"Prediction for {self.lactation.cow.cow_id} - Parity {self.lactation.parity}"
     

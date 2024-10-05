@@ -1,0 +1,49 @@
+.filter-container {
+    width: 90%;
+    padding: 20px;
+    background-color: #f5f5f5;  /* Light background */
+    border-radius: 8px;          /* Rounded corners */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  /* Optional: subtle shadow */
+    margin-bottom: 20px;         /* Spacing below the filter component */
+}
+
+.filter-container label {
+    display: block;              /* Labels on their own lines */
+    font-weight: bold;
+    color: #333;                 /* Dark gray text */
+    margin-bottom: 5px;          /* Small space between label and input */
+}
+
+.filter-container input {
+    width: 100%;                 /* Full width inputs */
+    padding: 10px;               /* Space inside the input */
+    margin-bottom: 15px;         /* Space between inputs */
+    border: 1px solid #ccc;      /* Light border */
+    border-radius: 5px;          /* Slightly rounded corners */
+    box-sizing: border-box;      /* Ensures padding doesn’t affect width */
+    font-size: 16px;
+    color: #333;
+}
+
+.filter-container input:focus {
+    border-color: #1E3A8A;       /* Dark blue accent on focus */
+    outline: none;               /* Remove default outline */
+}
+
+.filter-container input::placeholder {
+    color: #a8a6a6;              /* Placeholder text color */
+}
+
+.filter-container .filter-button {
+    background-color: #1E3A8A;   /* Dark blue button */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.filter-container .filter-button:hover {
+    background-color: #14274A;   /* Darker blue on hover */
+}

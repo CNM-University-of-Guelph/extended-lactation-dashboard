@@ -289,8 +289,6 @@ class GetUserFileView(APIView):
         
 
 class PredictionsListView(APIView):
-    # permission_classes = [AllowAny]
-
     def get(self, request):
         logging.info("Predictions API called")
         predictions = Prediction.objects.all().select_related("lactation__cow")
