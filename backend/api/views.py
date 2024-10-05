@@ -1,3 +1,4 @@
+import logging
 import os
 
 from django.conf import settings
@@ -286,3 +287,24 @@ class GetUserFileView(APIView):
         else:
             return Response({"message": "File not found"}, status=status.HTTP_404_NOT_FOUND)
         
+
+class PredictionsListView(APIView):
+    # permission_classes = [AllowAny]
+
+    def get(self, request):
+        logging.info("Predictions API called")
+        predictions = Prediction.objects.all().select_related("lactation__cow")
+
+        if not predictions.exists():
+            logging.info("No predictions found")
+
+        data = []
+        for prediction in predictions:
+            data.append({
+                "cow_id": prediction.lactation.cow.cow_id,
+                "parity": prediction.lactation.parity,
+                "predicted_value": prediction.prediction_value
+            })
+        logging.info(f"Returning {len(data)} predictions")
+        return Response(data, status=status.HTTP_200_OK)
+    
