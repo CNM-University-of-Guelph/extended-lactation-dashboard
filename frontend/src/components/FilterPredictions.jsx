@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import "../styles/FilterPredictions.css"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
 function FilterPredictions({ cowIdFilter, setCowIdFilter, parityFilter, setParityFilter, onToggleFilter }) {
     const [isHidden, setIsHidden] = useState(false);
@@ -38,10 +40,9 @@ function FilterPredictions({ cowIdFilter, setCowIdFilter, parityFilter, setParit
                     </>
                 )}
             </div>
-
-            {/* Add the tab to bring back the filter */}
+            
             <div className={`tab ${isHidden ? '' : 'hide'}`} onClick={toggleFilter}>
-                Show Filter
+                <FontAwesomeIcon icon={faFilter} size="2x" />
             </div>
         </>
     );

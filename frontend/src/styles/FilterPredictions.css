@@ -80,14 +80,18 @@
 /* Tab for bringing back the filter */
 .tab {
     position: fixed;
-    top: 80px;
-    left: 0; /* Start at the left edge */
-    background-color: #1E3A8A;
+    top: 100px; /* Adjust this to fit your layout */
+    left: 0; /* Stick to the left side of the screen */
+    background-color: #1E3A8A; /* Tab color */
     color: white;
-    padding: 10px 20px;
-    border-radius: 0 5px 5px 0;
+    width: 40px; /* Control the width of the tab */
+    height: 80px; /* Control the height of the tab */
+    border-top-right-radius: 40px; /* Semicircle shape */
+    border-bottom-right-radius: 40px; /* Semicircle shape */
     cursor: pointer;
-    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 1001; /* Ensure the tab is on top */
     transform: translateX(-100%); /* Hidden with the filter initially */
     transition: transform 0.5s ease-in-out;
