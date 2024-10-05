@@ -306,3 +306,17 @@ class PredictionsListView(APIView):
         logging.info(f"Returning {len(data)} predictions")
         return Response(data, status=status.HTTP_200_OK)
     
+
+class TreatmentListView(APIView):
+    def get(self, request):
+        lactations = Lactation.objects.all().select_related('cow')
+        data = [
+            {
+                "cow_id": lactation.cow.cow_id,
+                "parity": lactation.parity,
+                "treatment_group": lactation.treatment_group
+            }
+            for lactation in lactations
+        ]
+        return Response(data, status=status.HTTP_200_OK)
+        

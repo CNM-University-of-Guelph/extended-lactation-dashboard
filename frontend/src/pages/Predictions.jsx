@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import PredictionCard from "../components/PredictionCard";
 import FilterPredictions from '../components/FilterPredictions';
+import TreatmentSidebar from "../components/TreatmentSidebar";
 import api from '../api';
 import '../styles/Predictions.css';
 
@@ -48,6 +49,7 @@ function Predictions() {
     return (
         <div>
             <Navbar />
+            <TreatmentSidebar /> 
             <h1>Predictions Page</h1>
             <FilterPredictions
                 cowIdFilter={cowIdFilter}
