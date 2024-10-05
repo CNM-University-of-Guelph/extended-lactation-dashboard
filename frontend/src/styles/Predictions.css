@@ -1,0 +1,10 @@
+/* Predictions.css */
+body.predictions-page {
+    overflow: hidden;  /* Disable scrolling on the entire page */
+}
+
+.cards-container {
+    height: calc(100vh - 150px); /* Make sure the cards container fills the viewport minus filter and navbar */
+    overflow-y: auto;  /* Enable vertical scrolling for the card container */
+    padding: 20px;
+}

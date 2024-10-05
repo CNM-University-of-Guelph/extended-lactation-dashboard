@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import PredictionCard from "../components/PredictionCard";
 import FilterPredictions from '../components/FilterPredictions';
 import api from '../api';
+import '../styles/Predictions.css';
 
 function Predictions() {
     const [predictions, setPredictions] = useState([]);
@@ -32,6 +33,16 @@ function Predictions() {
         setFilteredPredictions(filtered);
     }, [cowIdFilter, parityFilter, predictions]);
 
+    // Control scrolling
+    useEffect(() => {
+        document.body.classList.add('predictions-page');
+        
+        return () => {
+            document.body.classList.remove('predictions-page');
+        };
+    }, []);
+
+
     return (
         <div>
             <Navbar />
@@ -42,19 +53,19 @@ function Predictions() {
                 parityFilter={parityFilter}
                 setParityFilter={setParityFilter}
             />
-            <div className="predictions-list">
+            <div className="cards-container">
                 {filteredPredictions.length > 0 ? (
-                        filteredPredictions.map(prediction => (
-                            <PredictionCard
-                                key={`${prediction.cow_id}-${prediction.parity}`}
-                                cowId={prediction.cow_id}
-                                parity={prediction.parity}
-                                predictedValue={prediction.predicted_value}
-                            />
-                        ))
-                    ) : (
-                        <p>No predictions available at the moment.</p>
-                    )}
+                    filteredPredictions.map(prediction => (
+                        <PredictionCard
+                            key={`${prediction.cow_id}-${prediction.parity}`}
+                            cowId={prediction.cow_id}
+                            parity={prediction.parity}
+                            predictedValue={prediction.predicted_value}
+                        />
+                    ))
+                ) : (
+                    <p>No predictions available at the moment.</p>
+                )}
             </div>
         </div>
     );
