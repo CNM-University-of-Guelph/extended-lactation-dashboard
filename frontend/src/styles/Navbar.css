@@ -5,6 +5,11 @@
     padding: 10px 20px;
     background-color: #1B1B1B; /* Main background color */
     color: #E0E0E0; /* Text color */
+    width: 100%;  /* Make the navbar fill the width of the page */
+    position: fixed;  /* Pin the navbar to the top */
+    top: 0;  /* Align at the top of the page */
+    left: 0;
+    z-index: 1000;  /* Ensure it stays on top of other elements */
 }
 
 .nav-list {
@@ -37,4 +42,9 @@
 
 .logout-button:hover {
     background-color: #b32424; /* Darker red on hover */
+}
+
+.nav-list a.active-link {
+    font-weight: bold;
+    color: #e210d8 !important;  /* Highlight color */
 }

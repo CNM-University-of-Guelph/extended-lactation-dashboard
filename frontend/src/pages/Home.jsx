@@ -1,11 +1,11 @@
-import Header from "../components/Header";
+import Navbar from "../components/Navbar";
 import DataUpload from "../components/DataUpload";
 import DisplayCSV from "../components/DisplayCSV";
 
 function Home() {
     return(
         <div>
-            <Header />
+            <Navbar />
             <h1>Welcome to the Home page!</h1>
             <DataUpload />
             <DisplayCSV />
