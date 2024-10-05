@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Header from "../components/Header";
+import Navbar from "../components/Navbar";
 import PredictionCard from "../components/PredictionCard";
 import api from '../api';
 
@@ -18,7 +18,7 @@ function Predictions() {
 
     return (
         <div>
-            <Header />
+            <Navbar />
             <h1>Predictions Page</h1>
 
             <div className="predictions-page">
