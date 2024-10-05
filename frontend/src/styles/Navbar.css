@@ -25,6 +25,7 @@
 .nav-list a {
     color: #E0CA3C; /* Accent color for links */
     text-decoration: none;
+    font-size: 1.2em; 
 }
 
 .nav-list a:hover {
@@ -38,6 +39,7 @@
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
+    margin-right: 30px;
 }
 
 .logout-button:hover {
