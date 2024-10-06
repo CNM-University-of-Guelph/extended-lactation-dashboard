@@ -8,7 +8,17 @@
     transition: margin-left 0.5s ease-in-out; /* Smooth resizing */
 }
 
-/* Expand the cards container when the filter is hidden */
-.cards-container.expand {
-    margin-left: 20px; /* Shrink the left margin to fill more space */
+/* Expand when FilterPredictions is hidden */
+.cards-container.expand-filter {
+    margin-left: 340px; /* Keep space for the treatment sidebar */
+}
+
+/* Expand when TreatmentSidebar is hidden */
+.cards-container.expand-treatment {
+    margin-left: 340px; /* Shrink the left margin */
+}
+
+/* Expand when both FilterPredictions and TreatmentSidebar are hidden */
+.cards-container.expand-filter.expand-treatment {
+    margin-left: 20px; /* Shrink the left margin */
 }

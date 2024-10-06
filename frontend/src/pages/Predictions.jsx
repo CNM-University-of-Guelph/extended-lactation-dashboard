@@ -74,8 +74,10 @@ function Predictions() {
                 onToggleFilter={handleToggleFilter}
                 toggleExpandAllCards={toggleExpandAllCards}
             />
-
-            <div className={`cards-container ${isFilterHidden ? 'expand' : ''}`}>
+            {/* Adjust cards-container based on both sidebars' visibility */}
+            <div className={`cards-container 
+                ${isFilterHidden ? 'expand-filter' : ''} 
+                ${isTreatmentHidden ? 'expand-treatment' : ''}`}>
                 {filteredPredictions.length > 0 ? (
                     filteredPredictions.map(prediction => (
                         <PredictionCard

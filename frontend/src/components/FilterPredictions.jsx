@@ -4,13 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
 function FilterPredictions({ cowIdFilter, setCowIdFilter, parityFilter, setParityFilter, isHidden, onToggleFilter, toggleExpandAllCards }) {
-    // const [isHidden, setIsHidden] = useState(false);
     const [expandAll, setExpandAll] = useState(false);
-
-    // const toggleFilter = () => {
-    //     setIsHidden(!isHidden);
-    //     onToggleFilter(!isHidden);  // Notify the parent about filter state change
-    // };   
 
     const handleExpandAll = () => {
         setExpandAll(!expandAll);
