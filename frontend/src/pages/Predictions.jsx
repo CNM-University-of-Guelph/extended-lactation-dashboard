@@ -12,12 +12,20 @@ function Predictions() {
     const [cowIdFilter, setCowIdFilter] = useState('');
     const [parityFilter, setParityFilter] = useState('');
 
-    const [isFilterHidden, setIsFilterHidden] = useState(false);
+    const [isFilterHidden, setIsFilterHidden] = useState(false); 
+    const [isTreatmentHidden, setIsTreatmentHidden] = useState(true);  
     const [isExpandedAll, setIsExpandedAll] = useState(false);
 
-    // Handle the filter state change from the child component
-    const handleToggleFilter = (isHidden) => {
-        setIsFilterHidden(isHidden);
+    // Toggle filter sidebar
+    const handleToggleFilter = () => {
+        setIsFilterHidden(!isFilterHidden);
+        setIsTreatmentHidden(true);  // Hide treatment sidebar when filter is open
+    };
+
+    // Toggle treatment sidebar
+    const handleToggleTreatment = () => {
+        setIsTreatmentHidden(!isTreatmentHidden);
+        setIsFilterHidden(true);  // Hide filter sidebar when treatment is open
     };
 
     const toggleExpandAllCards = (expandAll) => {
@@ -49,16 +57,24 @@ function Predictions() {
     return (
         <div>
             <Navbar />
-            <TreatmentSidebar /> 
+
+            <TreatmentSidebar 
+                isHidden={isTreatmentHidden} 
+                toggleSidebar={handleToggleTreatment}
+            />
+
             <h1>Predictions Page</h1>
+            
             <FilterPredictions
                 cowIdFilter={cowIdFilter}
                 setCowIdFilter={setCowIdFilter}
                 parityFilter={parityFilter}
                 setParityFilter={setParityFilter}
+                isHidden={isFilterHidden}
                 onToggleFilter={handleToggleFilter}
                 toggleExpandAllCards={toggleExpandAllCards}
             />
+
             <div className={`cards-container ${isFilterHidden ? 'expand' : ''}`}>
                 {filteredPredictions.length > 0 ? (
                     filteredPredictions.map(prediction => (

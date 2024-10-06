@@ -4,8 +4,8 @@ import api from '../api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
-function TreatmentSidebar() {
-    const [isHidden, setIsHidden] = useState(true);
+function TreatmentSidebar({ isHidden, toggleSidebar }) {
+    // const [isHidden, setIsHidden] = useState(true);
     const [treatmentData, setTreatmentData] = useState([]);
 
     // Fetch treatment data from the backend
@@ -19,9 +19,9 @@ function TreatmentSidebar() {
             });
     }, []);
 
-    const toggleSidebar = () => {
-        setIsHidden(!isHidden);
-    };
+    // const toggleSidebar = () => {
+    //     setIsHidden(!isHidden);
+    // };
 
     return (
         <>
