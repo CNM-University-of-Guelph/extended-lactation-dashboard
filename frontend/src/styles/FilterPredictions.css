@@ -4,7 +4,7 @@
     left: 0;
     z-index: 1000;
     background-color: #f5f5f5;
-    padding: 20px;
+    padding: 20px 20px 20px 45px;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     width: 300px;
@@ -17,7 +17,7 @@
 }
 
 /* Show the tab when the filter is hidden */
-.filter-container.hide + .tab {
+.filter-container.hide + .filter-tab {
     transform: translateX(0); /* Slide the tab into view */
 }
 
@@ -78,9 +78,9 @@
 }
 
 /* Tab for bringing back the filter */
-.tab {
+.filter-tab {
     position: fixed;
-    top: 100px; /* Adjust this to fit your layout */
+    top: 165px; /* Adjust this to fit your layout */
     left: 0; /* Stick to the left side of the screen */
     background-color: #1E3A8A; /* Tab color */
     color: white;

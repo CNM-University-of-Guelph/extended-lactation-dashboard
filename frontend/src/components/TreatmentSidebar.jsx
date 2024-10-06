@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 function TreatmentSidebar() {
-    const [isHidden, setIsHidden] = useState(false);
+    const [isHidden, setIsHidden] = useState(true);
     const [treatmentData, setTreatmentData] = useState([]);
 
     // Fetch treatment data from the backend
@@ -48,7 +48,7 @@ function TreatmentSidebar() {
             </div>
 
             {/* Tab for showing the sidebar */}
-            <div className="tab" onClick={toggleSidebar}>
+            <div className="treatment-tab" onClick={toggleSidebar}>
                 <FontAwesomeIcon icon={faArrowRight} size="2x" />
             </div>
         </>

@@ -52,7 +52,7 @@ function FilterPredictions({ cowIdFilter, setCowIdFilter, parityFilter, setParit
             </div>
 
             {/* Tab for showing the filter */}
-            <div className={`tab ${isHidden ? '' : 'hide'}`} onClick={toggleFilter}>
+            <div className={`filter-tab ${isHidden ? '' : 'hide'}`} onClick={toggleFilter}>
                 <FontAwesomeIcon icon={faFilter} size="2x" />
             </div>
         </>

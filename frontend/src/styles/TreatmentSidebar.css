@@ -8,7 +8,7 @@
     overflow-y: auto;
     box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
     transition: transform 0.5s ease-in-out;
-    padding: 20px;
+    padding: 20px 20px 20px 45px;
     z-index: 1000;
 }
 
@@ -32,7 +32,7 @@
 }
 
 /* Tab for bringing back the sidebar */
-.tab {
+.treatment-tab {
     position: fixed;
     top: 80px;
     left: 0;
@@ -51,12 +51,12 @@
     transition: transform 0.5s ease-in-out, background-color 0.3s ease-in-out;
 }
 
-.tab:hover {
+.treatment-tab:hover {
     background-color: #14274A;
 }
 
 /* Show the tab when the sidebar is hidden */
-.treatment-sidebar.hide + .tab {
+.treatment-sidebar.hide + .treatment-tab {
     transform: translateX(0); /* Slide the tab into view */
 }
 
@@ -67,6 +67,6 @@
 .treatment-item {
     padding: 10px;
     margin-bottom: 10px;
-    background-color: #e0e0e0;
+    background-color: #6dce13;
     border-radius: 5px;
 }
