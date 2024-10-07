@@ -16,6 +16,8 @@ function Predictions() {
     const [isTreatmentHidden, setIsTreatmentHidden] = useState(true);  
     const [isExpandedAll, setIsExpandedAll] = useState(false);
 
+    const [refreshSidebar, setRefreshSidebar] = useState(false);
+
     // Toggle filter sidebar
     const handleToggleFilter = () => {
         setIsFilterHidden(!isFilterHidden);
@@ -55,6 +57,10 @@ function Predictions() {
         setFilteredPredictions(filtered);
     }, [cowIdFilter, parityFilter, predictions]);
 
+    const refreshTreatmentSidebar = () => {
+        setRefreshSidebar(prev => !prev);
+    };
+
     return (
         <div>
             <Navbar />
@@ -62,6 +68,7 @@ function Predictions() {
             <TreatmentSidebar 
                 isHidden={isTreatmentHidden} 
                 toggleSidebar={handleToggleTreatment}
+                refreshTrigger={refreshSidebar}
             />
 
             <h1>Predictions Page</h1>
@@ -89,6 +96,7 @@ function Predictions() {
                             isExpandedAll={isExpandedAll}
                             lactationId={prediction.lactation_id}
                             treatmentGroup={prediction.treatment_group}
+                            onTreatmentGroupChange={refreshTreatmentSidebar}
                         />
                     ))
                 ) : (

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import "../styles/PredictionCard.css";
 import api from '../api';
 
-function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactationId, treatmentGroup }) {
+function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactationId, treatmentGroup, onTreatmentGroupChange }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [selectedTreatmentGroup, setSelectedTreatmentGroup] = useState(treatmentGroup);
 
@@ -27,6 +27,7 @@ function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactatio
 
             if (response.status === 200 && response.data.status === 'success') {
                 console.log('Treatment group updated successfully:', response.data.message);
+                onTreatmentGroupChange();
             } else {
                 console.error('Error updating treatment group:', response.data.message);
             }
