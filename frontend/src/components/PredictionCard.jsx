@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import "../styles/PredictionCard.css";
 import api from '../api';
 
-function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactationId }) {
+function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactationId, treatmentGroup }) {
     const [isExpanded, setIsExpanded] = useState(false);
-    const [treatmentGroup, setTreatmentGroup] = useState("No group");
+    const [selectedTreatmentGroup, setSelectedTreatmentGroup] = useState(treatmentGroup);
 
     // Update local isExpanded when isExpandedAll changes from the parent
     useEffect(() => {
@@ -17,7 +17,7 @@ function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactatio
 
     const handleTreatmentChange = async (event) => {
         const newTreatmentGroup = event.target.value;
-        setTreatmentGroup(newTreatmentGroup);
+        setSelectedTreatmentGroup(newTreatmentGroup);
 
         // Send update request to backend
         try {
@@ -52,7 +52,7 @@ function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactatio
                 <label htmlFor={`treatment-group-${cowId}`}>Treatment Group: </label>
                 <select
                     id={`treatment-group-${cowId}`}
-                    value={treatmentGroup}
+                    value={selectedTreatmentGroup}
                     onChange={handleTreatmentChange}
                 >
                     <option value="No group">No Group</option>

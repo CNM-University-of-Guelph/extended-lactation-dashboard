@@ -306,7 +306,8 @@ class PredictionsListView(APIView):
                 "cow_id": prediction.lactation.cow.cow_id,
                 "parity": prediction.lactation.parity,
                 "predicted_value": prediction.prediction_value,
-                "lactation_id": prediction.lactation.id
+                "lactation_id": prediction.lactation.id,
+                "treatment_group": prediction.lactation.treatment_group,
             })
         logging.info(f"Returning {len(data)} predictions")
         return Response(data, status=status.HTTP_200_OK)

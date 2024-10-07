@@ -88,6 +88,7 @@ function Predictions() {
                             predictedValue={prediction.predicted_value}
                             isExpandedAll={isExpandedAll}
                             lactationId={prediction.lactation_id}
+                            treatmentGroup={prediction.treatment_group}
                         />
                     ))
                 ) : (
