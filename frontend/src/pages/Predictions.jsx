@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import PredictionCard from "../components/PredictionCard";
 import FilterPredictions from '../components/FilterPredictions';
+import TreatmentSidebar from "../components/TreatmentSidebar";
 import api from '../api';
 import '../styles/Predictions.css';
 
@@ -11,12 +12,22 @@ function Predictions() {
     const [cowIdFilter, setCowIdFilter] = useState('');
     const [parityFilter, setParityFilter] = useState('');
 
-    const [isFilterHidden, setIsFilterHidden] = useState(false);
+    const [isFilterHidden, setIsFilterHidden] = useState(false); 
+    const [isTreatmentHidden, setIsTreatmentHidden] = useState(true);  
     const [isExpandedAll, setIsExpandedAll] = useState(false);
 
-    // Handle the filter state change from the child component
-    const handleToggleFilter = (isHidden) => {
-        setIsFilterHidden(isHidden);
+    const [refreshSidebar, setRefreshSidebar] = useState(false);
+
+    // Toggle filter sidebar
+    const handleToggleFilter = () => {
+        setIsFilterHidden(!isFilterHidden);
+        setIsTreatmentHidden(true);  // Hide treatment sidebar when filter is open
+    };
+
+    // Toggle treatment sidebar
+    const handleToggleTreatment = () => {
+        setIsTreatmentHidden(!isTreatmentHidden);
+        setIsFilterHidden(true);  // Hide filter sidebar when treatment is open
     };
 
     const toggleExpandAllCards = (expandAll) => {
@@ -27,6 +38,7 @@ function Predictions() {
     useEffect(() => {
         api.get('api/predictions/')
             .then(response => {
+                console.log('Fetched predictions:', response.data);
                 setPredictions(response.data);
                 setFilteredPredictions(response.data);
             })
@@ -45,19 +57,35 @@ function Predictions() {
         setFilteredPredictions(filtered);
     }, [cowIdFilter, parityFilter, predictions]);
 
+    const refreshTreatmentSidebar = () => {
+        setRefreshSidebar(prev => !prev);
+    };
+
     return (
         <div>
             <Navbar />
+
+            <TreatmentSidebar 
+                isHidden={isTreatmentHidden} 
+                toggleSidebar={handleToggleTreatment}
+                refreshTrigger={refreshSidebar}
+            />
+
             <h1>Predictions Page</h1>
+            
             <FilterPredictions
                 cowIdFilter={cowIdFilter}
                 setCowIdFilter={setCowIdFilter}
                 parityFilter={parityFilter}
                 setParityFilter={setParityFilter}
+                isHidden={isFilterHidden}
                 onToggleFilter={handleToggleFilter}
                 toggleExpandAllCards={toggleExpandAllCards}
             />
-            <div className={`cards-container ${isFilterHidden ? 'expand' : ''}`}>
+            {/* Adjust cards-container based on both sidebars' visibility */}
+            <div className={`cards-container 
+                ${isFilterHidden ? 'expand-filter' : ''} 
+                ${isTreatmentHidden ? 'expand-treatment' : ''}`}>
                 {filteredPredictions.length > 0 ? (
                     filteredPredictions.map(prediction => (
                         <PredictionCard
@@ -66,6 +94,9 @@ function Predictions() {
                             parity={prediction.parity}
                             predictedValue={prediction.predicted_value}
                             isExpandedAll={isExpandedAll}
+                            lactationId={prediction.lactation_id}
+                            treatmentGroup={prediction.treatment_group}
+                            onTreatmentGroupChange={refreshTreatmentSidebar}
                         />
                     ))
                 ) : (

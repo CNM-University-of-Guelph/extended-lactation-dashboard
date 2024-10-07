@@ -30,9 +30,22 @@ class Lactation(models.Model):
         (MULTIPAROUS, "Multiparous")
     ]
 
+    TREATMENT_GROUP_CHOICES = [
+        ('No group', 'No Group'),
+        ('Extend 1 cycle', 'Extend 1 cycle'),
+        ('Extend 2 cycles', 'Extend 2 cycles'),
+        ('Extend 3 cycles', 'Extend 3 cycles'),
+        ('Do not extend', 'Do not extend')
+    ]
+
     cow = models.ForeignKey(Cow, on_delete=models.CASCADE)
     parity = models.IntegerField()
     parity_type = models.CharField(max_length=15, choices=PARITY_TYPE_CHOICES)
+    treatment_group = models.CharField(
+        max_length=20,
+        choices=TREATMENT_GROUP_CHOICES,
+        default='No group'
+    ) 
 
     def __str__(self):
         return f"Cow {self.cow.cow_id} - Parity {self.parity}"

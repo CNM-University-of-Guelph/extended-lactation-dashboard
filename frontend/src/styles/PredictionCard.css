@@ -37,6 +37,7 @@
     border-radius: 5px;
     padding: 5px 10px;
     cursor: pointer;
+    z-index: 1;
 }
 
 .expand-button:hover {
@@ -68,4 +69,29 @@
     height: auto;
     max-height: 300px;  /* Limit the height of the placeholder graph */
     border-radius: 5px;
+}
+
+.treatment-group-dropdown {
+    position: relative;
+    top: -100px; /* Move the dropdown higher */
+    margin: 0 auto 10px auto; /* Adjust margin to ensure it's centered and spaced properly */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center label and dropdown */
+}
+
+.treatment-group-dropdown label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px; /* Add space between label and dropdown */
+    font-size: 20px;
+}
+
+.treatment-group-dropdown select {
+    width: 30%; /* Reduce the width of the dropdown */
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    background-color: #f9f9f9;
 }
