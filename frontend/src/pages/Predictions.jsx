@@ -36,6 +36,7 @@ function Predictions() {
     useEffect(() => {
         api.get('api/predictions/')
             .then(response => {
+                console.log('Fetched predictions:', response.data);
                 setPredictions(response.data);
                 setFilteredPredictions(response.data);
             })
@@ -86,6 +87,7 @@ function Predictions() {
                             parity={prediction.parity}
                             predictedValue={prediction.predicted_value}
                             isExpandedAll={isExpandedAll}
+                            lactationId={prediction.lactation_id}
                         />
                     ))
                 ) : (

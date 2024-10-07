@@ -5,6 +5,10 @@ from django.conf import settings
 from django.http import FileResponse
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
+
 from rest_framework import generics, status
 from api.serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -301,7 +305,8 @@ class PredictionsListView(APIView):
             data.append({
                 "cow_id": prediction.lactation.cow.cow_id,
                 "parity": prediction.lactation.parity,
-                "predicted_value": prediction.prediction_value
+                "predicted_value": prediction.prediction_value,
+                "lactation_id": prediction.lactation.id
             })
         logging.info(f"Returning {len(data)} predictions")
         return Response(data, status=status.HTTP_200_OK)
@@ -319,4 +324,30 @@ class TreatmentListView(APIView):
             for lactation in lactations
         ]
         return Response(data, status=status.HTTP_200_OK)
+        
+
+class UpdateTreatmentGroupView(APIView):
+    def post(self, request, lactation_id):
+        try:
+            lactation = get_object_or_404(Lactation, id=lactation_id)
+            new_treatment_group = request.data.get('treatment_group')  # Use request.data for JSON payloads
+
+            if new_treatment_group in dict(Lactation.TREATMENT_GROUP_CHOICES).keys():
+                lactation.treatment_group = new_treatment_group
+                lactation.save()
+                return Response({
+                    "status": "success",
+                    "message": f"Treatment group updated to {new_treatment_group}"
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    "status": "error",
+                    "message": "Invalid treatment group value"
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({
+                "status": "error",
+                "message": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
