@@ -2,9 +2,21 @@ import React, { useState, useEffect } from 'react';
 import "../styles/PredictionCard.css";
 import api from '../api';
 
-function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactationId, treatmentGroup, onTreatmentGroupChange }) {
+function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactationId, treatmentGroup, onTreatmentGroupChange, plotPath, extend1Cycle, extend2Cycle, extend3Cycle, daysToTarget }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [selectedTreatmentGroup, setSelectedTreatmentGroup] = useState(treatmentGroup);
+
+    // Debug: Log the incoming props
+    console.log("PredictionCard props:", {
+        cowId,
+        parity,
+        predictedValue,
+        plotPath,
+        extend1Cycle,
+        extend2Cycle,
+        extend3Cycle,
+        daysToTarget
+    });
 
     // Update local isExpanded when isExpandedAll changes from the parent
     useEffect(() => {
@@ -64,10 +76,37 @@ function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactatio
                 </select>
             </div>
 
-            {/* Expandable content with placeholder image */}
-            <div className="expanded-content">
-                <img src="/images/sample_bar_graph.jpg" alt="Placeholder Graph" />
-            </div>
+            {/* Expanded content with dynamic plot and table */}
+            {isExpanded && (
+                <div className="expanded-content">
+                    <div className="plot-container">
+                        {/* Dynamic image loaded from plotPath */}
+                        <img src={plotPath} alt="Prediction Plot" className="prediction-plot" />
+                        {/* <img src={`${process.env.REACT_APP_MEDIA_URL}${plotPath}`} alt="Prediction Plot" className="prediction-plot" /> */}
+                        {/* <img src={`${import.meta.env.VITE_MEDIA_URL}${plotPath}`} alt="Prediction Plot" className="prediction-plot" /> */}
+                    </div>
+                    <div className="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Extend 1 Cycle</th>
+                                    <th>Extend 2 Cycle</th>
+                                    <th>Extend 3 Cycle</th>
+                                    <th>Days to Target</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{extend1Cycle}</td>
+                                    <td>{extend2Cycle}</td>
+                                    <td>{extend3Cycle}</td>
+                                    <td>{daysToTarget}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -53,6 +53,8 @@
 
 /* Expanded content section */
 .expanded-content {
+    display: flex;
+    justify-content: space-between;
     margin-top: 20px;
     opacity: 0;
     max-height: 0; /* Hide content initially */
@@ -94,4 +96,43 @@
     border: 1px solid #ccc;
     font-size: 1em;
     background-color: #f9f9f9;
+}
+
+.plot-container {
+    flex: 1;
+    margin-right: 20px; /* Space between image and table */
+}
+
+.prediction-plot {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    border-radius: 5px;
+}
+
+/* Table container for right side */
+.table-container {
+    flex: 1;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1em;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+table th {
+    background-color: #1E3A8A;
+    color: white;
+}
+
+table td {
+    background-color: #f9f9f9;
+    color: #333;
 }

@@ -97,6 +97,11 @@ function Predictions() {
                             lactationId={prediction.lactation_id}
                             treatmentGroup={prediction.treatment_group}
                             onTreatmentGroupChange={refreshTreatmentSidebar}
+                            plotPath={prediction.plot_path}
+                            extend1Cycle={prediction.extend_1_cycle}
+                            extend2Cycle={prediction.extend_2_cycle}
+                            extend3Cycle={prediction.extend_3_cycle}
+                            daysToTarget={prediction.days_to_target}
                         />
                     ))
                 ) : (

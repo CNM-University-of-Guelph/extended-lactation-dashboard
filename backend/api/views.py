@@ -350,7 +350,7 @@ class DataUploadView(APIView):
     def make_extrapolation(self, predicted_305_my, lactation, request):
         
         def predict_cycle_my(day_305_my, persistency, num_cycles):
-            return day_305_my + (persistency * (305 + (21 * num_cycles)))
+            return day_305_my + (persistency * (21 * num_cycles))
 
         def predict_days_to_target(day_305_my, persistency):
             if day_305_my > 20:
@@ -415,7 +415,7 @@ class DataUploadView(APIView):
             plt.savefig(plot_path)
             plt.close()
 
-            return plot_path
+            return os.path.join(f"extrapolation_plots/user_{request.user.id}", plot_filename)
 
 
         lactation_data = LactationData.objects.filter(lactation=lactation, dim__lte=60).order_by("dim")
@@ -510,6 +510,11 @@ class PredictionsListView(APIView):
                 "predicted_value": prediction.prediction_value,
                 "lactation_id": prediction.lactation.id,
                 "treatment_group": prediction.lactation.treatment_group,
+                "plot_path": prediction.plot_path,
+                "extend_1_cycle": prediction.extend_1_cycle,
+                "extend_2_cycle": prediction.extend_2_cycle,
+                "extend_3_cycle": prediction.extend_3_cycle,
+                "days_to_target": prediction.days_to_target,
             })
         logging.info(f"Returning {len(data)} predictions")
         return Response(data, status=status.HTTP_200_OK)
