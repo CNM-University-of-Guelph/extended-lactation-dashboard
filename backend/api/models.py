@@ -112,6 +112,12 @@ class Prediction(models.Model):
     prediction_type = models.CharField(max_length=50, default="regression")
     prediction_value = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
+    approximate_persistency = models.FloatField()
+    extend_1_cycle = models.FloatField()
+    extend_2_cycle = models.FloatField()
+    extend_3_cycle = models.FloatField()
+    days_to_target = models.IntegerField()
+    plot_path = models.CharField(max_length=255)
 
     class Meta:
         unique_together = ("lactation", "prediction_type")
