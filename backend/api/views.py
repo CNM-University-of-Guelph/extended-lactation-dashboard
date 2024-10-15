@@ -199,7 +199,7 @@ class DataUploadView(APIView):
                     'predicted_305_my': features_df['predicted_305_my'].iloc[0],
                 }
             )
-            
+
         elif parity == 1:
             features, created = PrimiparousFeatures.objects.update_or_create(
                 lactation=lactation,
@@ -228,42 +228,72 @@ class DataUploadView(APIView):
     def load_model(self, parity_type):
         models_dir = os.path.join(settings.BASE_DIR, "api/ml_models")
         if parity_type == Lactation.PRIMIPAROUS:
-            pass
+            model_path = os.path.join(models_dir, "SVR_primiparous.sav")
         elif parity_type == Lactation.MULTIPAROUS:
             model_path = os.path.join(models_dir, "SVR_multiparous.sav")
         else:
             raise ValueError(
                 f"load_models got an unexpected parity type: {parity_type}"
                 )
-        model = joblib.load(model_path)
-        return model
+        return joblib.load(model_path)
 
-    def get_input_features(self, lactation):
-        try:
-            features = MultiparousFeatures.objects.get(lactation=lactation)
-            feature_values = [
-                features.parity,
-                features.milk_total_1_10,
-                features.milk_total_11_20,
-                features.milk_total_21_30,
-                features.milk_total_31_40,
-                features.milk_total_41_50,
-                features.milk_total_51_60,
-                features.prev_persistency,
-                features.prev_lactation_length,
-                features.prev_days_to_peak,
-                features.prev_305_my,
-                features.persistency,
-                features.days_to_peak,
-                features.predicted_305_my,
-                features.month_sin,
-                features.month_cos
+    def get_input_features(self, lactation, parity):
+        """Gets the input features for a given lactation and parity."""
+        
+        def fetch_features(model, lactation, feature_list):
+            """Helper function to fetch features and handle exceptions."""
+            try:
+                features = model.objects.get(lactation=lactation)
+                feature_values = [
+                    getattr(features, feature) for feature in feature_list
+                    ]
+                return np.array(feature_values).reshape(1, -1)
+            except model.DoesNotExist:
+                print(f"No features found for Lactation {lactation}. Skipping...")
+                return None
+        
+        if parity > 1:
+            # Multiparous feature list
+            multiparous_feature_list = [
+                'parity',
+                'milk_total_1_10',
+                'milk_total_11_20',
+                'milk_total_21_30',
+                'milk_total_31_40',
+                'milk_total_41_50',
+                'milk_total_51_60',
+                'prev_persistency',
+                'prev_lactation_length',
+                'prev_days_to_peak',
+                'prev_305_my',
+                'persistency',
+                'days_to_peak',
+                'predicted_305_my',
+                'month_sin',
+                'month_cos'
             ]
-            return np.array(feature_values).reshape(1, -1)
+            return fetch_features(MultiparousFeatures, lactation, multiparous_feature_list)
 
-        except MultiparousFeatures.DoesNotExist:
-            print(f"No features found for Lactation {lactation}. Skipping...")
-            return None
+        elif parity == 1:
+            # Primiparous feature list
+            primiparous_feature_list = [
+                'milk_total_1_10',
+                'milk_total_11_20',
+                'milk_total_21_30',
+                'milk_total_31_40',
+                'milk_total_41_50',
+                'milk_total_51_60',
+                'a',
+                'b',
+                'b0',
+                'c',
+                'predicted_305_my',
+                'month_sin',
+                'month_cos'
+            ]
+            return fetch_features(PrimiparousFeatures, lactation, primiparous_feature_list)
+        
+        return None
 
     def store_prediction(slef, lactation, prediction):
         """
@@ -291,7 +321,7 @@ class DataUploadView(APIView):
             try:
                 lactation = Lactation.objects.get(cow__cow_id=cow_id, parity=parity)
                 model = self.load_model(lactation.parity_type)
-                input_features = self.get_input_features(lactation)
+                input_features = self.get_input_features(lactation, parity)
 
                 if input_features is None:
                     continue
