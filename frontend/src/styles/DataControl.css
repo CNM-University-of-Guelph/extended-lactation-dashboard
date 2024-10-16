@@ -1,6 +1,6 @@
 .data-control-container {
     position: fixed;
-    top: 350px; /* Adjust this value based on the height of DataUpload */
+    top: 375px; /* Adjust this value based on the height of DataUpload */
     left: 20px;
     width: 33%;
     padding: 20px;
@@ -10,11 +10,39 @@
     z-index: 100;
   }
   
-  .data-type-select,
-  .file-select,
-  select {
+.data-type-select,
+.file-select,
+.filter-input,
+select,
+input {
     margin-bottom: 20px;
     padding: 10px;
     width: 100%;
-  }
+}
   
+.filters-container {
+    margin-top: 20px;
+}
+  
+/* Fade Transition Styles */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 300ms ease-in-out;
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 300ms ease-in-out;
+}
