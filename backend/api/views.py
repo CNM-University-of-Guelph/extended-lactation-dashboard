@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
+from django.db.models import Avg
 
 from rest_framework import generics, status
 from api.serializers import UserSerializer
@@ -15,6 +16,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import joblib
@@ -24,6 +27,8 @@ from .processing.validate import validate
 from .processing.clean import clean
 from .processing.multi_features import multi_feature_construction
 from .processing.primi_features import primi_feature_construction
+
+matplotlib.use('Agg')
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -74,7 +79,7 @@ class DataUploadView(APIView):
                 eligible_lactations, cleaned_data
             )
 
-            self.make_prediction(eligible_lactations)
+            self.make_prediction(eligible_lactations, request)
 
         except ValueError as e:
             return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -295,7 +300,7 @@ class DataUploadView(APIView):
         
         return None
 
-    def store_prediction(slef, lactation, prediction):
+    def store_prediction(slef, lactation, prediction, extrapolations):
         """
         Store the prediction in the database.
 
@@ -306,10 +311,16 @@ class DataUploadView(APIView):
         Prediction.objects.create(
             lactation=lactation,
             prediction_type='regression',
-            prediction_value=prediction
+            prediction_value=prediction,
+            approximate_persistency=extrapolations["approx_persistency"],
+            extend_1_cycle=extrapolations["extend_1_cycle"],
+            extend_2_cycle=extrapolations["extend_2_cycle"],
+            extend_3_cycle=extrapolations["extend_3_cycle"],
+            days_to_target=extrapolations["days_to_target"],
+            plot_path=extrapolations["plot_path"],
         )
 
-    def make_prediction(self, eligible_lactations):
+    def make_prediction(self, eligible_lactations, request):
         """
         Iterate over eligible lactations, load the correct model, retrieve the input features, 
         make the prediction, and store the result.
@@ -327,12 +338,135 @@ class DataUploadView(APIView):
                     continue
                 
                 prediction = model.predict(input_features)[0]
-                self.store_prediction(lactation, prediction)
+                extrapolations = self.make_extrapolation(
+                    prediction, lactation, request
+                    )
+                self.store_prediction(lactation, prediction, extrapolations)
 
             except Lactation.DoesNotExist:
                 print(f"Lactation for Cow {cow_id}, Parity {parity} not found.")
                 continue
 
+    def make_extrapolation(self, predicted_305_my, lactation, request):
+        
+        def predict_cycle_my(day_305_my, persistency, num_cycles):
+            return day_305_my + (persistency * (21 * num_cycles))
+
+        def predict_days_to_target(day_305_my, persistency):
+            if day_305_my > 20:
+                return 305 + int((20 - day_305_my) / persistency)
+            else:
+                return None
+
+        def plot_days_to_target(lactation_data, predicted_305_my, approx_persistency, last_dim, days_to_target, cow_id, parity, request):
+            """
+            Creates and saves a plot showing Milk Yield vs DIM, along with predictions.
+            
+            Args:
+                lactation_data (QuerySet): Lactation data for the first 60 DIM.
+                predicted_305_my (float): Predicted milk yield at day 305.
+                approx_persistency (float): The approximate persistency.
+                last_dim (int): The last DIM recorded for the lactation.
+                days_to_target (float): The DIM at which milk yield is expected to reach 20 kg/d.
+                cow_id (str): The cow ID.
+                parity (int): The lactation parity.
+            
+            Returns:
+                str: The path to the saved plot image.
+            """
+            dims = [entry.dim for entry in lactation_data]
+            milk_yields = [entry.milk_yield for entry in lactation_data]
+
+            # Create the plot
+            plt.figure(figsize=(10, 6))
+            plt.plot(dims, milk_yields, label="Milk Yield (first 60 DIM)", marker='o')
+
+            # Vertical lines at DIM 60 and 305
+            plt.axvline(x=60, color='blue', linestyle='--', label='DIM 60')
+            plt.axvline(x=305, color='orange', linestyle='--', label='DIM 305')
+
+            # Predicted day 305 MY
+            plt.scatter([305], [predicted_305_my], color='red', label=f"Predicted 305 MY: {predicted_305_my:.2f} kg", zorder=5)
+
+            # Dashed line for persistency
+            plt.plot([last_dim, 305], [milk_yields[-1], predicted_305_my], 'r--', label=f"Persistency (from DIM {last_dim})")
+
+            # Annotate the slope of the persistency line
+            slope = approx_persistency
+            mid_dim = (last_dim + 305) / 2
+            mid_milk_yield = (milk_yields[-1] + predicted_305_my) / 2
+            plt.text(mid_dim, mid_milk_yield, f"Slope: {slope:.2f}", color='red', fontsize=10)
+
+            # Plot days to 20kg/d target
+            plt.scatter([days_to_target], [20], color='green', label=f"Days to 20 kg/d: {days_to_target:.0f} DIM", zorder=5)
+
+            # Labels and legend
+            plt.xlabel("DIM (Days In Milk)")
+            plt.ylabel("Milk Yield (kg/d)")
+            plt.title(f"Milk Yield and Persistency Extrapolation for Cow {cow_id}, Parity {parity}")
+            plt.legend(loc="upper right")
+
+            # Save the plot to a file
+            plot_filename = f"lactation_plot_cow_{cow_id}_parity_{parity}.png"
+            plot_dir = os.path.join(settings.MEDIA_ROOT, f"extrapolation_plots/user_{request.user.id}")
+            os.makedirs(plot_dir, exist_ok=True)
+            plot_path = os.path.join(plot_dir, plot_filename)
+            plt.tight_layout()
+            plt.savefig(plot_path)
+            plt.close()
+
+            return os.path.join(f"extrapolation_plots/user_{request.user.id}", plot_filename)
+
+        lactation_data = LactationData.objects.filter(lactation=lactation, dim__lte=60).order_by("dim")
+        
+        if lactation_data.exists():
+            # Approximate persistency
+            dim_56_to_60 = lactation_data.filter(dim__gte=56, dim__lte=60)
+            last_milk_yield = dim_56_to_60.aggregate(avg_yield=Avg('milk_yield'))['avg_yield']
+            # last_milk_yield = lactation_data.last().milk_yield
+            # last_dim = lactation_data.last().dim
+            approx_persistency = (predicted_305_my - last_milk_yield) / (305 - 60)
+           
+            # Predict MY after extending by n cycles
+            extend_1_cycle = predict_cycle_my(
+                predicted_305_my, approx_persistency, 1
+                )
+            extend_2_cycle = predict_cycle_my(
+                predicted_305_my, approx_persistency, 2
+                )
+            extend_3_cycle = predict_cycle_my(
+                predicted_305_my, approx_persistency, 3
+                )
+            
+            # Predict days to 20kg/d target
+            days_to_target = predict_days_to_target(
+                predicted_305_my, approx_persistency
+                )
+            
+            plot_path = plot_days_to_target(
+                lactation_data=lactation_data,
+                predicted_305_my=predicted_305_my,
+                approx_persistency=approx_persistency,
+                last_dim=60,
+                days_to_target=days_to_target,
+                cow_id=lactation.cow.cow_id,
+                parity=lactation.parity,
+                request=request
+            )
+
+            return {
+                "approx_persistency": approx_persistency,
+                "extend_1_cycle": extend_1_cycle,
+                "extend_2_cycle": extend_2_cycle,
+                "extend_3_cycle": extend_3_cycle,
+                "days_to_target": days_to_target,
+                "plot_path": plot_path
+            }
+        
+        else:
+            print(f"No lactation data found for Cow {lactation.cow.cow_id}, Parity {lactation.parity}.")
+            return None, None
+        
 
 class ListUserFilesView(APIView):
     permission_classes = [IsAuthenticated]
@@ -375,6 +509,11 @@ class PredictionsListView(APIView):
                 "predicted_value": prediction.prediction_value,
                 "lactation_id": prediction.lactation.id,
                 "treatment_group": prediction.lactation.treatment_group,
+                "plot_path": prediction.plot_path,
+                "extend_1_cycle": prediction.extend_1_cycle,
+                "extend_2_cycle": prediction.extend_2_cycle,
+                "extend_3_cycle": prediction.extend_3_cycle,
+                "days_to_target": prediction.days_to_target,
             })
         logging.info(f"Returning {len(data)} predictions")
         return Response(data, status=status.HTTP_200_OK)
