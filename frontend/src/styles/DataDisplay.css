@@ -20,12 +20,13 @@
   .table-wrapper {
     max-height: 350px;
     overflow-y: auto;
+    overflow-x: auto;
   }
   
   table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
+    min-width: 800px;
   }
   
   th,
@@ -34,6 +35,7 @@
     border: 1px solid #ddd;
     text-align: left;
     word-wrap: break-word;
+    min-width: 40px;
   }
   
   th {
