@@ -8,4 +8,7 @@ urlpatterns = [
     path('predictions/', views.PredictionsListView.as_view(), name='predictions-list'),
     path('treatments/', views.TreatmentListView.as_view(), name='treatments-list'),
     path('update-treatment-group/<int:lactation_id>/', views.UpdateTreatmentGroupView.as_view(), name='update_treatment_group'),
+    path('lactation-data/', views.LactationDataListView.as_view(), name="lactation-data"),
+    path('multiparous-features/', views.MultiparousFeaturesListView.as_view(), name="multiparous-features"),
+    path('primiparous-features/', views.PrimiparousFeaturesListView.as_view(), name="primiparous-features"),
 ]

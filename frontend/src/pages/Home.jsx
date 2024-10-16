@@ -4,11 +4,13 @@ import DataUpload from "../components/DataUpload";
 import TreatmentSidebar from "../components/TreatmentSidebar";
 import DataControl from "../components/DataControl";
 import DataDisplay from "../components/DataDisplay";
+import api from "../api";
+import Papa from "papaparse";
 
 function Home() {
     const [isSidebarHidden, setIsSidebarHidden] = useState(true);
 
-    const [dataType, setDataType] = useState(""); // "csv", "lactation-data", etc.
+    const [dataType, setDataType] = useState("");
     const [selectedFile, setSelectedFile] = useState("");
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -26,11 +28,17 @@ function Home() {
           setLoading(true);
           try {
             let fetchedData = [];
-            if (dataType === "csv" && selectedFile) {
-              // Fetch CSV data
-              const res = await api.get(`/api/data/file/${selectedFile}/`);
-              const parsedData = Papa.parse(res.data, { header: true });
-              fetchedData = parsedData.data;
+
+            if (dataType === "csv" && !selectedFile) {
+                // No file selected, do not fetch data
+                return;
+                
+            } else if (dataType === "csv" && selectedFile) {
+                // Fetch CSV data
+                const res = await api.get(`/api/data/file/${selectedFile}/`);
+                const parsedData = Papa.parse(res.data, { header: true });
+                fetchedData = parsedData.data;
+              
             } else if (dataType) {
               // Fetch data from backend models
               const res = await api.get(`/api/${dataType}/`);
