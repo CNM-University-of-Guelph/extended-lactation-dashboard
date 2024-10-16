@@ -5,10 +5,11 @@
     padding: 20px;
     margin: 10px 0;
     width: 95%;
-    max-height: 120px; /* Collapsed height */
+    max-height: 250px; /* Collapsed height */
     overflow: hidden;
     transition: max-height 0.5s ease-in-out; /* Smooth height transition */
 }
+
 .prediction-card.expanded {
     max-height: 1280px;  /* Adjust based on how much content the expanded card will have */
 }
@@ -17,80 +18,74 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-bottom: 60px;
 }
 
-.cow-info h3 {
+/* Left Section: Cow ID and Parity */
+.left-section {
+    flex: 1;
+}
+
+.left-section .cow-info h2 {
     margin: 0;
+    margin-top: -20px;
     color: #333;
-    font-size: 1.5em; /* Larger font for prominence */
+    font-size: 2em; /* Larger font for Cow ID */
 }
-
-.cow-info p {
+  
+.left-section .cow-info h3 {
     margin: 0;
     color: #555;
+    font-size: 1.5em; /* Slightly smaller font for Parity */
 }
 
-.expand-button {
-    background-color: #1E3A8A;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 5px 10px;
-    cursor: pointer;
-    z-index: 1;
-}
-
-.expand-button:hover {
-    background-color: #14274A;
-}
-
-.predicted-value {
-    font-weight: bold;
-    font-size: 1.2em;
-    color: #1a73e8;
-    margin-top: 10px;
-}
-
-/* Expanded content section */
-.expanded-content {
+/* Center Section: Predicted Value, Days to Target, Treatment Group */
+.center-section {
+    flex: 2;
     display: flex;
-    justify-content: space-between;
-    margin-top: -80px;
-    opacity: 0;
-    max-height: 0; /* Hide content initially */
-    overflow: hidden;
-    transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
+    justify-content: space-around;
+    align-items: center;
+}
+  
+  .center-section > div {
+    text-align: center;
 }
 
-.prediction-card.expanded .expanded-content {
-    opacity: 1;
-    max-height: 1280px; /* Adjust height to show content */
+  .center-section .label {
+    font-size: 1em;
+    color: #333;
+    /* margin: 0; */
 }
 
-.expanded-content img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
+.center-section .predicted-value-section h3 {
+    font-size: 1.25em;
 }
 
-.treatment-group-dropdown {
-    position: relative;
-    top: -100px; /* Move the dropdown higher */
-    margin: 0 auto 10px auto; /* Adjust margin to ensure it's centered and spaced properly */
+.center-section .days-to-target-section h3 {
+    font-size: 1.25em;
+}
+
+  .center-section .value {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #000000;
+    /* margin: 0; */
+}
+
+  .treatment-group-section {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center label and dropdown */
+    align-items: center;
 }
-
-.treatment-group-dropdown label {
+  
+  .treatment-group-section label {
     font-weight: bold;
     color: #333;
-    margin-bottom: 5px; /* Add space between label and dropdown */
-    font-size: 20px;
+    margin-bottom: 5px;
+    font-size: 1.25em;
 }
-
-.treatment-group-dropdown select {
-    width: 30%; /* Reduce the width of the dropdown */
+  
+  .treatment-group-section select {
     padding: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
@@ -98,40 +93,80 @@
     background-color: #f9f9f9;
 }
 
-.plot-container {
-    flex: 2;
-    margin-right: 20px; /* Space between image and table */
+/* Right Section: Expand/Collapse Button */
+.right-section {
+    flex: 0;
+}
+  
+.expand-button {
+    background-color: #1E3A8A;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px; /* Increased padding for larger button */
+    font-size: 1em; /* Increased font size */
+    cursor: pointer;
+    z-index: 1;
+}
+  
+.expand-button:hover {
+    background-color: #14274A;
 }
 
-.prediction-plot {
+/* Expanded content section */
+.expanded-content {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -60px; /* Negative margin to reduce gap */
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
+}
+  
+.expanded-content.expanded {
+    opacity: 1;
+    max-height: 1000px;
+}
+  
+  /* Plot and Table Containers */
+.plot-container {
+    flex: 2; /* 2/3 of the width */
+    margin-right: 20px;
+    display: flex;
+    align-items: flex-start;
+}
+  
+.plot-container img {
     width: 100%;
     height: auto;
-    /* max-height: 300px; */
+    min-height: 400px; /* Adjust as needed */
     border-radius: 5px;
 }
-
-/* Table container for right side */
+  
 .table-container {
-    flex: 1;
+    flex: 1; /* 1/3 of the width */
 }
 
+/* Table styles */
 table {
     width: 100%;
     border-collapse: collapse;
     font-size: 1em;
 }
-
-table th, table td {
+  
+table th,
+table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
 }
-
+  
 table th {
     background-color: #1E3A8A;
     color: white;
 }
-
+  
 table td {
     background-color: #f9f9f9;
     color: #333;
