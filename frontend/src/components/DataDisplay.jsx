@@ -6,8 +6,11 @@ function DataDisplay({ data, loading, rowLimitMessage }) {
     return (
       <div className="data-display-container">
         {/* Loading Indicator */}
-        {loading && <p>Loading...</p>}
-  
+        {/* {loading && <p>Loading...</p>} */}
+        {loading && (
+        <div className="spinner"></div>
+        )} 
+
         {/* No Data Message */}
         {!loading && (!data || data.length === 0) && <p>No data to display</p>}
   

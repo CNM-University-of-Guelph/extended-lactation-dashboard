@@ -33,6 +33,7 @@ function Home() {
         }
   
         setLoading(true);
+        setData([]);
         try {
           let fetchedData = [];
   
