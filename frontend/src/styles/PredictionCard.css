@@ -10,7 +10,7 @@
     transition: max-height 0.5s ease-in-out; /* Smooth height transition */
 }
 .prediction-card.expanded {
-    max-height: 500px;  /* Adjust based on how much content the expanded card will have */
+    max-height: 1280px;  /* Adjust based on how much content the expanded card will have */
 }
 
 .card-header {
@@ -55,21 +55,21 @@
 .expanded-content {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
+    margin-top: -80px;
     opacity: 0;
     max-height: 0; /* Hide content initially */
+    overflow: hidden;
     transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
 }
 
 .prediction-card.expanded .expanded-content {
     opacity: 1;
-    max-height: 300px; /* Adjust height to show content */
+    max-height: 1280px; /* Adjust height to show content */
 }
 
 .expanded-content img {
     width: 100%;
     height: auto;
-    max-height: 300px;  /* Limit the height of the placeholder graph */
     border-radius: 5px;
 }
 
@@ -99,14 +99,14 @@
 }
 
 .plot-container {
-    flex: 1;
+    flex: 2;
     margin-right: 20px; /* Space between image and table */
 }
 
 .prediction-plot {
     width: 100%;
     height: auto;
-    max-height: 300px;
+    /* max-height: 300px; */
     border-radius: 5px;
 }
 
