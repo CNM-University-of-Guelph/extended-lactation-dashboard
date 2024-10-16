@@ -10,17 +10,17 @@ function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactatio
     const [selectedTreatmentGroup, setSelectedTreatmentGroup] = useState(treatmentGroup);
 
     // Debug: Log the incoming props
-    console.log("PredictionCard props:", {
-        cowId,
-        parity,
-        predictedValue,
-        plotPath,
-        extend1Cycle,
-        extend2Cycle,
-        extend3Cycle,
-        daysToTarget,
-        fullPlotPath
-    });
+    // console.log("PredictionCard props:", {
+    //     cowId,
+    //     parity,
+    //     predictedValue,
+    //     plotPath,
+    //     extend1Cycle,
+    //     extend2Cycle,
+    //     extend3Cycle,
+    //     daysToTarget,
+    //     fullPlotPath
+    // });
 
     // Update local isExpanded when isExpandedAll changes from the parent
     useEffect(() => {
@@ -81,7 +81,6 @@ function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactatio
             </div>
 
             {/* Expanded content with dynamic plot and table */}
-            {isExpanded && (
                 <div className="expanded-content">
                     <div className="plot-container">
                         {/* Dynamic image loaded from plotPath */}
@@ -108,7 +107,6 @@ function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactatio
                         </table>
                     </div>
                 </div>
-            )}
         </div>
     );
 }
