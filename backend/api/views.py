@@ -417,7 +417,6 @@ class DataUploadView(APIView):
 
             return os.path.join(f"extrapolation_plots/user_{request.user.id}", plot_filename)
 
-
         lactation_data = LactationData.objects.filter(lactation=lactation, dim__lte=60).order_by("dim")
         
         if lactation_data.exists():

@@ -3,6 +3,9 @@ import "../styles/PredictionCard.css";
 import api from '../api';
 
 function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactationId, treatmentGroup, onTreatmentGroupChange, plotPath, extend1Cycle, extend2Cycle, extend3Cycle, daysToTarget }) {
+    const baseURL = "http://localhost:8000/media/";
+    const fullPlotPath = `${baseURL}${plotPath}`;
+
     const [isExpanded, setIsExpanded] = useState(false);
     const [selectedTreatmentGroup, setSelectedTreatmentGroup] = useState(treatmentGroup);
 
@@ -15,7 +18,8 @@ function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactatio
         extend1Cycle,
         extend2Cycle,
         extend3Cycle,
-        daysToTarget
+        daysToTarget,
+        fullPlotPath
     });
 
     // Update local isExpanded when isExpandedAll changes from the parent
@@ -81,9 +85,7 @@ function PredictionCard({ cowId, parity, predictedValue, isExpandedAll, lactatio
                 <div className="expanded-content">
                     <div className="plot-container">
                         {/* Dynamic image loaded from plotPath */}
-                        <img src={plotPath} alt="Prediction Plot" className="prediction-plot" />
-                        {/* <img src={`${process.env.REACT_APP_MEDIA_URL}${plotPath}`} alt="Prediction Plot" className="prediction-plot" /> */}
-                        {/* <img src={`${import.meta.env.VITE_MEDIA_URL}${plotPath}`} alt="Prediction Plot" className="prediction-plot" /> */}
+                        <img src={fullPlotPath} alt="Prediction Plot" className="prediction-plot" />
                     </div>
                     <div className="table-container">
                         <table>
