@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import api from "../api";
+import React, { useEffect, useRef } from "react";
 import "../styles/DataControl.css"
 import { CSSTransition, SwitchTransition } from "react-transition-group";
 
@@ -12,24 +11,12 @@ function DataControl({
   setCowIdFilter,
   parityFilter,
   setParityFilter,
+  files,
 }) {
-  const [files, setFiles] = useState([]);
 
   const csvRef = useRef(null);
   const filtersRef = useRef(null);
   const emptyRef = useRef(null);
-
-  useEffect(() => {
-    const fetchFiles = async () => {
-      try {
-        const res = await api.get("/api/data/files");
-        setFiles(res.data.files);
-      } catch (error) {
-        console.error("Error fetching files:", error);
-      }
-    };
-    fetchFiles();
-  }, []);
 
   // Reset selected file when data type changes
   useEffect(() => {

@@ -16,6 +16,7 @@ function Home() {
     const [parityFilter, setParityFilter] = useState("");
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [files, setFiles] = useState([]);
   
     // Function to toggle sidebar visibility
     const toggleSidebar = () => {
@@ -65,6 +66,15 @@ function Home() {
       }
     }, [dataType, selectedFile, cowIdFilter, parityFilter]);
 
+    const fetchFiles = async () => {
+      try {
+        const res = await api.get("/api/data/files");
+        setFiles(res.data.files);
+      } catch (error) {
+        console.error("Error fetching files:", error);
+      }
+    };
+
     return (
         <div>
           <Navbar />
@@ -73,7 +83,7 @@ function Home() {
             toggleSidebar={toggleSidebar}
           />
           <div className="left-container">
-            <DataUpload />
+            <DataUpload fetchFiles={fetchFiles}/>
             <DataControl
               dataType={dataType}
               setDataType={setDataType}
@@ -83,6 +93,7 @@ function Home() {
               setCowIdFilter={setCowIdFilter}
               parityFilter={parityFilter}
               setParityFilter={setParityFilter}
+              files={files}
             />
           </div>
           <DataDisplay
