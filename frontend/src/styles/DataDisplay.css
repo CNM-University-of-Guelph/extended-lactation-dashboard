@@ -1,6 +1,6 @@
 .data-display-container {
   position: fixed;
-  top: 150px;
+  top: 90px;
   right: 20px;
   width: 56%;
   padding: 20px;
@@ -8,7 +8,7 @@
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 100;
-  height: 500px; /* This will contain the unexpanded view */
+  height: 600px; /* This will contain the unexpanded view */
   display: flex;
   flex-direction: column;
 }
@@ -190,4 +190,31 @@ table {
   justify-content: center;
   align-items: center;
   height: 100%; /* Ensure it fills the container height */
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+  margin-bottom: -5px;
+}
+
+.pagination-controls button {
+  margin: 0 10px;
+  padding: 5px 10px;
+  background-color: #e31a1a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.pagination-controls button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-controls span {
+  font-size: 16px;
 }

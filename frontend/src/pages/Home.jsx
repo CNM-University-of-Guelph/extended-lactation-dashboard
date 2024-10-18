@@ -54,7 +54,7 @@ function Home() {
   
           // Handle row limit
           if (fetchedData.length > ROW_LIMIT) {
-            setData(fetchedData.slice(0, ROW_LIMIT));
+            setData(fetchedData);
             setRowLimitMessage(
               `Showing the first ${ROW_LIMIT} rows out of ${fetchedData.length} total rows`
             );

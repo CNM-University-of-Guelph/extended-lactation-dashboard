@@ -6,6 +6,27 @@ function DataDisplay({ data, loading, rowLimitMessage }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const expandedRef = useRef(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 1000;
+  const totalPages = Math.ceil(data.length / rowsPerPage);
+
+  const currentData = data.slice(
+    (currentPage - 1) * rowsPerPage, // Start index
+    currentPage * rowsPerPage  // End index
+  );
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const previousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
   };
@@ -24,21 +45,21 @@ function DataDisplay({ data, loading, rowLimitMessage }) {
     };
   }, [isExpanded]);
 
-  const TableContent = () => (
+  const TableContent = ({ currentData }) => (
     <>
       {/* Table to display data */}
         <table>
           <thead>
             <tr>
-              {Object.keys(data[0]).map((header, index) => (
+              {Object.keys(currentData[0]).map((header, index) => (
                 <th key={index}>{header.replace(/_/g, " ")}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {data.map((row, rowIndex) => (
+            {currentData.map((row, rowIndex) => (
               <tr key={rowIndex}>
-                {Object.keys(data[0]).map((header, colIndex) => (
+                {Object.keys(currentData[0]).map((header, colIndex) => (
                   <td key={colIndex}>{row[header]}</td>
                 ))}
               </tr>
@@ -46,6 +67,20 @@ function DataDisplay({ data, loading, rowLimitMessage }) {
           </tbody>
         </table>
     </>
+  );
+
+  const PaginationControls = () => (
+    <div className="pagination-controls">
+      <button onClick={previousPage} disabled={currentPage === 1}>
+        Previous
+      </button>
+      <span>
+        Page {currentPage} of {totalPages}
+      </span>
+      <button onClick={nextPage} disabled={currentPage === totalPages}>
+        Next
+      </button>
+    </div>
   );
 
   return (
@@ -71,8 +106,9 @@ function DataDisplay({ data, loading, rowLimitMessage }) {
               Expand Table
             </button>
             <div className="table-wrapper">
-              <TableContent />
+              <TableContent currentData={currentData} />
             </div>
+            <PaginationControls />
           </div>
         )}
 
@@ -93,8 +129,9 @@ function DataDisplay({ data, loading, rowLimitMessage }) {
             Collapse Table
           </button>
           <div className="table-wrapper">
-            <TableContent isExpandedView={true} />
+            <TableContent currentData={currentData} isExpandedView={true} />
           </div>
+          <PaginationControls />
         </div>
       </div>
       </CSSTransition>
