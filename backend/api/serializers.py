@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
-
+from .models import LactationData, MultiparousFeatures, PrimiparousFeatures
 
 class UserSerializer(serializers.ModelSerializer):
     confirmPassword = serializers.CharField(write_only=True)
@@ -38,3 +38,30 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
  
+
+class LactationDataSerializer(serializers.ModelSerializer):
+    cow_id = serializers.CharField(source='lactation.cow.cow_id')
+    parity = serializers.IntegerField(source='lactation.parity')
+
+    class Meta:
+        model = LactationData
+        fields = ['cow_id', 'parity', 'dim', 'date', 'milk_yield']
+
+
+class MultiparousFeaturesSerializer(serializers.ModelSerializer):
+    cow_id = serializers.CharField(source='lactation.cow.cow_id')
+    parity = serializers.IntegerField(source='lactation.parity')
+
+    class Meta:
+        model = MultiparousFeatures
+        fields = '__all__'
+
+
+class PrimiparousFeaturesSerializer(serializers.ModelSerializer):
+    cow_id = serializers.CharField(source='lactation.cow.cow_id')
+    parity = serializers.IntegerField(source='lactation.parity')
+
+    class Meta:
+        model = PrimiparousFeatures
+        fields = '__all__'
+        

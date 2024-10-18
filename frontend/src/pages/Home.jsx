@@ -1,29 +1,96 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import DataUpload from "../components/DataUpload";
-import DisplayCSV from "../components/DisplayCSV";
 import TreatmentSidebar from "../components/TreatmentSidebar";
+import DataControl from "../components/DataControl";
+import DataDisplay from "../components/DataDisplay";
+import api from "../api";
+import Papa from "papaparse";
 
 function Home() {
     const [isSidebarHidden, setIsSidebarHidden] = useState(true);
 
+    const [dataType, setDataType] = useState("");
+    const [selectedFile, setSelectedFile] = useState("");
+    const [cowIdFilter, setCowIdFilter] = useState("");
+    const [parityFilter, setParityFilter] = useState("");
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(false);
+  
     // Function to toggle sidebar visibility
     const toggleSidebar = () => {
         setIsSidebarHidden(!isSidebarHidden);
     };
 
+    useEffect(() => {
+      const fetchData = async () => {
+        // For CSV, ensure a file is selected
+        if (dataType === "csv" && !selectedFile) {
+          return;
+        }
+  
+        setLoading(true);
+        setData([]);
+        try {
+          let fetchedData = [];
+  
+          if (dataType === "csv") {
+            // Fetch CSV data
+            const res = await api.get(`/api/data/file/${selectedFile}/`);
+            const parsedData = Papa.parse(res.data, { header: true });
+            fetchedData = parsedData.data;
+          } else if (dataType) {
+            // Fetch data from backend models with filters
+            const params = {};
+            if (cowIdFilter) params.cow_id = cowIdFilter;
+            if (parityFilter) params.parity = parityFilter;
+  
+            const res = await api.get(`/api/${dataType}/`, { params });
+            fetchedData = res.data;
+          }
+  
+          setData(fetchedData);      
 
-    return(
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      if (dataType) {
+        fetchData();
+      } else {
+        setData([]);
+      }
+    }, [dataType, selectedFile, cowIdFilter, parityFilter]);
+
+    return (
         <div>
-            <Navbar />
-            <TreatmentSidebar 
-                isHidden={isSidebarHidden} 
-                toggleSidebar={toggleSidebar} 
-            />
+          <Navbar />
+          <TreatmentSidebar
+            isHidden={isSidebarHidden}
+            toggleSidebar={toggleSidebar}
+          />
+          <div className="left-container">
             <DataUpload />
-            <DisplayCSV />
+            <DataControl
+              dataType={dataType}
+              setDataType={setDataType}
+              selectedFile={selectedFile}
+              setSelectedFile={setSelectedFile}
+              cowIdFilter={cowIdFilter}
+              setCowIdFilter={setCowIdFilter}
+              parityFilter={parityFilter}
+              setParityFilter={setParityFilter}
+            />
+          </div>
+          <DataDisplay
+            data={data}
+            loading={loading}
+          />
         </div>
-    );
+      );
 }
 
 export default Home;

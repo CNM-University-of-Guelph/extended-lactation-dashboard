@@ -1,0 +1,220 @@
+.data-display-container {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  width: 56%;
+  padding: 20px;
+  background-color: #a8a6a6;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  height: 600px; /* This will contain the unexpanded view */
+  display: flex;
+  flex-direction: column;
+}
+
+.row-limit-message {
+  color: rgb(174, 15, 15);
+  font-size: 16px;
+  margin-bottom: -30px;
+}
+
+.parent-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+}
+
+.table-wrapper {
+  margin-top: 40px;
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+  max-height: 90%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+  word-wrap: break-word;
+  min-width: 40px;
+}
+
+th {
+  background-color: #f4f4f4;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.spinner {
+  width: 80px; 
+  height: 80px; 
+  border: 8px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #e31a1a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Expanded Table Container */
+.expanded-table-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.expanded-table-content {
+  position: relative;
+  width: 90%;
+  height: 90%;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  z-index: 1001;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.expanded-table-content .table-wrapper {
+  flex-grow: 1;
+  max-height: 100%; /* Account for the button and padding */
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 800px;
+}
+
+.collapse-button {
+  background-color: #e31a1a;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  align-self: flex-end;
+  margin-bottom: 10px;
+}
+
+.collapse-button:hover {
+  background-color: #b32424;
+}
+
+.expand-button {
+  background-color: #e31a1a;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  position: absolute;
+  right: 20px;
+  top: 15px;
+}
+
+.expand-button:hover {
+  background-color: #b32424;
+}
+
+/* Hide the original container when expanded */
+.data-display-container.expanded {
+  visibility: hidden;
+}
+
+/* Disable scrolling on body when no-scroll class is present */
+.no-scroll {
+  overflow: hidden;
+}
+
+/* Expand animation */
+.expand-enter {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.expand-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: all 300ms ease-in-out;
+}
+
+.expand-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.expand-exit-active {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 300ms ease-in-out;
+}
+
+.no-data-message {
+  font-size: 44px; /* Make the text larger */
+  color: #040404; /* Dark text color */
+  text-align: center; /* Center the text horizontally */
+  margin: 0; /* Remove default margin */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ensure it fills the container height */
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+  margin-bottom: -5px;
+}
+
+.pagination-controls button {
+  margin: 0 10px;
+  padding: 5px 10px;
+  background-color: #e31a1a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.pagination-controls button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-controls span {
+  font-size: 16px;
+}

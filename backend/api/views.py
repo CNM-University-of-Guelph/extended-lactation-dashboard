@@ -23,6 +23,7 @@ import pandas as pd
 import joblib
 
 from .models import UploadFile, Cow, Lactation, LactationData, MultiparousFeatures, Prediction, PrimiparousFeatures
+from .serializers import LactationDataSerializer, MultiparousFeaturesSerializer, PrimiparousFeaturesSerializer
 from .processing.validate import validate
 from .processing.clean import clean
 from .processing.multi_features import multi_feature_construction
@@ -558,3 +559,57 @@ class UpdateTreatmentGroupView(APIView):
                 "message": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+
+class LactationDataListView(generics.ListAPIView):
+    serializer_class = LactationDataSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = LactationData.objects.filter(
+            lactation__cow__owner=self.request.user
+        )
+        cow_id = self.request.query_params.get('cow_id', None)
+        parity = self.request.query_params.get('parity', None)
+
+        if cow_id:
+            queryset = queryset.filter(lactation__cow__cow_id=cow_id)
+        if parity:
+            queryset = queryset.filter(lactation__parity=parity)
+
+        return queryset
+
+class MultiparousFeaturesListView(generics.ListAPIView):
+    serializer_class = MultiparousFeaturesSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = MultiparousFeatures.objects.filter(
+            lactation__cow__owner=self.request.user
+        )
+        cow_id = self.request.query_params.get('cow_id', None)
+        parity = self.request.query_params.get('parity', None)
+
+        if cow_id:
+            queryset = queryset.filter(lactation__cow__cow_id=cow_id)
+        if parity:
+            queryset = queryset.filter(lactation__parity=parity)
+
+        return queryset
+
+class PrimiparousFeaturesListView(generics.ListAPIView):
+    serializer_class = PrimiparousFeaturesSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = PrimiparousFeatures.objects.filter(
+            lactation__cow__owner=self.request.user
+        )
+        cow_id = self.request.query_params.get('cow_id', None)
+        parity = self.request.query_params.get('parity', None)
+
+        if cow_id:
+            queryset = queryset.filter(lactation__cow__cow_id=cow_id)
+        if parity:
+            queryset = queryset.filter(lactation__parity=parity)
+
+        return queryset
