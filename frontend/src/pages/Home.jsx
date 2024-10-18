@@ -17,8 +17,6 @@ function Home() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
   
-    const ROW_LIMIT = 1000;
-
     // Function to toggle sidebar visibility
     const toggleSidebar = () => {
         setIsSidebarHidden(!isSidebarHidden);
@@ -51,12 +49,8 @@ function Home() {
             fetchedData = res.data;
           }
   
-          // Handle row limit
-          if (fetchedData.length > ROW_LIMIT) {
-            setData(fetchedData);
-          } else {
-            setData(fetchedData);
-          }
+          setData(fetchedData);      
+
         } catch (error) {
           console.error("Error fetching data:", error);
         } finally {
