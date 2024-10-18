@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import api from "../api";
 import "../styles/DataUpload.css"
 
-function DataUpload() {
+function DataUpload({ fetchFiles }) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [message, setMessage] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
@@ -28,7 +28,6 @@ function DataUpload() {
         setMessage("Processing file...");
 
         try {
-            // Simulate API request to backend with mock data processing
             const res = await api.post("/api/data/upload/", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
@@ -38,6 +37,7 @@ function DataUpload() {
             // Assuming backend sends a success message
             setMessage("File processed successfully!");
             console.log("Processed file path:", res.data.processed_file); 
+            fetchFiles();
 
         } catch (error) {
             if (error.response && error.response.data) {
