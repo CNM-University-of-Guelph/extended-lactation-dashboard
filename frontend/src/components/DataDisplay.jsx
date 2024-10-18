@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "../styles/DataDisplay.css";
 import { CSSTransition } from "react-transition-group";
 
-function DataDisplay({ data, loading, rowLimitMessage }) {
+function DataDisplay({ data, loading }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const expandedRef = useRef(null);
 
@@ -92,11 +92,6 @@ function DataDisplay({ data, loading, rowLimitMessage }) {
         {/* No Data Message */}
         {!loading && (!data || data.length === 0) && (
           <p className="no-data-message">No data to display</p>
-        )}
-
-        {/* Row Limit Message */}
-        {!loading && rowLimitMessage && (
-          <p className="row-limit-message">{rowLimitMessage}</p>
         )}
 
         {/* Render Table Content in normal view */}

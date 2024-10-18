@@ -16,7 +16,6 @@ function Home() {
     const [parityFilter, setParityFilter] = useState("");
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [rowLimitMessage, setRowLimitMessage] = useState("");
   
     const ROW_LIMIT = 1000;
 
@@ -55,12 +54,8 @@ function Home() {
           // Handle row limit
           if (fetchedData.length > ROW_LIMIT) {
             setData(fetchedData);
-            setRowLimitMessage(
-              `Showing the first ${ROW_LIMIT} rows out of ${fetchedData.length} total rows`
-            );
           } else {
             setData(fetchedData);
-            setRowLimitMessage("");
           }
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -72,9 +67,7 @@ function Home() {
       if (dataType) {
         fetchData();
       } else {
-        // Clear data and rowLimitMessage when no dataType is selected
         setData([]);
-        setRowLimitMessage("");
       }
     }, [dataType, selectedFile, cowIdFilter, parityFilter]);
 
@@ -101,7 +94,6 @@ function Home() {
           <DataDisplay
             data={data}
             loading={loading}
-            rowLimitMessage={rowLimitMessage}
           />
         </div>
       );
