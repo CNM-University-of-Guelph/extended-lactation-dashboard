@@ -1,85 +1,78 @@
 .data-display-container {
-    position: fixed;
-    top: 150px;
-    right: 20px;
-    width: 56%;
-    padding: 20px;
-    background-color: #a8a6a6;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 100;
-    height: 500px;
-  }
-  
+  position: fixed;
+  top: 150px;
+  right: 20px;
+  width: 56%;
+  padding: 20px;
+  background-color: #a8a6a6;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  height: 500px; /* This will contain the unexpanded view */
+  display: flex;
+  flex-direction: column;
+}
+
 .row-limit-message {
-    color: rgb(174, 15, 15);
-    font-size: 16px;
-    margin-bottom: 4px;
-  }
-  
+  color: rgb(174, 15, 15);
+  font-size: 16px;
+  margin-bottom: -30px;
+}
+
 .parent-container {
-    display: flex;
-    flex-direction: column;
-  }
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+}
 
 .table-wrapper {
-    max-height: 100%;
-    overflow-y: auto;
-    overflow-x: auto;
-    flex-grow: 1;
-}
-  
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 800px;
-  }
-  
-th,
-td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: left;
-    word-wrap: break-word;
-    min-width: 40px;
-  }
-  
-th {
-    background-color: #f4f4f4;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
-  
-tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-.spinner {
-    margin: 100px auto;
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(0, 0, 0, 0.1);
-    border-top-color: #e31a1a;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-  
-@keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
+  margin-top: 40px;
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+  max-height: 90%;
 }
 
-/* Overlay for background tint */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
+table {
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity for tint */
-  z-index: 999; /* Ensure it's above other elements */
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+  word-wrap: break-word;
+  min-width: 40px;
+}
+
+th {
+  background-color: #f4f4f4;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.spinner {
+  margin: 100px auto;
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #e31a1a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Expanded Table Container */
@@ -89,18 +82,17 @@ tbody tr:nth-child(even) {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1000; /* Above the overlay */
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Expanded Table Content */
 .expanded-table-content {
   position: relative;
   width: 90%;
   height: 90%;
-  background-color: #fff; /* Background color for the table */
+  background-color: #fff;
   border-radius: 8px;
   padding: 20px;
   z-index: 1001;
@@ -109,25 +101,18 @@ tbody tr:nth-child(even) {
   flex-direction: column;
 }
 
-/* Animation for expanding */
-@keyframes expand {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* Table in expanded view */
 .expanded-table-content .table-wrapper {
   flex-grow: 1;
-  overflow: auto;
+  max-height: 100%; /* Account for the button and padding */
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
-/* Collapse Button */
+table {
+  width: 100%;
+  min-width: 800px;
+}
+
 .collapse-button {
   background-color: #e31a1a;
   color: #fff;
@@ -143,7 +128,6 @@ tbody tr:nth-child(even) {
   background-color: #b32424;
 }
 
-/* Expand Button */
 .expand-button {
   background-color: #e31a1a;
   color: #fff;
@@ -152,31 +136,18 @@ tbody tr:nth-child(even) {
   border-radius: 5px;
   cursor: pointer;
   margin-bottom: 10px;
-  position: absolute; 
-  right: 20px; 
-  top: 15px; 
+  position: absolute;
+  right: 20px;
+  top: 15px;
 }
 
 .expand-button:hover {
   background-color: #b32424;
 }
 
-/* Adjust the data display container when expanded */
+/* Hide the original container when expanded */
 .data-display-container.expanded {
-  visibility: hidden; /* Hide the original container when expanded */
-}
-
-/* Adjust the table-wrapper to fill the container */
-.expanded-table-content .table-wrapper {
-  max-height: 100%;
-  overflow-y: auto;
-  height: 100%;
-}
-
-/* Ensure the table fills the container */
-.expanded-table-content table {
-  width: 100%;
-  height: 100%;
+  visibility: hidden;
 }
 
 /* Disable scrolling on body when no-scroll class is present */
@@ -184,6 +155,7 @@ tbody tr:nth-child(even) {
   overflow: hidden;
 }
 
+/* Expand animation */
 .expand-enter {
   opacity: 0;
   transform: scale(0.8);

@@ -27,7 +27,6 @@ function DataDisplay({ data, loading, rowLimitMessage }) {
   const TableContent = () => (
     <>
       {/* Table to display data */}
-      <div className="table-wrapper">
         <table>
           <thead>
             <tr>
@@ -46,7 +45,6 @@ function DataDisplay({ data, loading, rowLimitMessage }) {
             ))}
           </tbody>
         </table>
-      </div>
     </>
   );
 
