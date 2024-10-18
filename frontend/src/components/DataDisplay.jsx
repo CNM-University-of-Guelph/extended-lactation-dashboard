@@ -83,6 +83,10 @@ function DataDisplay({ data, loading }) {
     </div>
   );
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [data]);
+
   return (
     <>
       <div className={`data-display-container ${isExpanded ? 'expanded' : ''}`}>
