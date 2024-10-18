@@ -177,3 +177,14 @@ table {
   transform: scale(0.8);
   transition: all 300ms ease-in-out;
 }
+
+.no-data-message {
+  font-size: 44px; /* Make the text larger */
+  color: #040404; /* Dark text color */
+  text-align: center; /* Center the text horizontally */
+  margin: 0; /* Remove default margin */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ensure it fills the container height */
+}

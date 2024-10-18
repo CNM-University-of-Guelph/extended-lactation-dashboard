@@ -56,7 +56,7 @@ function DataDisplay({ data, loading, rowLimitMessage }) {
 
         {/* No Data Message */}
         {!loading && (!data || data.length === 0) && (
-          <p>No data to display</p>
+          <p className="no-data-message">No data to display</p>
         )}
 
         {/* Row Limit Message */}
