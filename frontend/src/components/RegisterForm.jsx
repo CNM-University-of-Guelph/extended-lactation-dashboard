@@ -10,13 +10,22 @@ function RegisterForm({ route, method }) {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
+
+    const [error, setError] = useState(""); // General error message
+    const [usernameError, setUsernameError] = useState(""); // Specific username error
+    const [emailError, setEmailError] = useState(""); // Specific email error
+    const [passwordError, setPasswordError] = useState(""); // Password mismatch error
+
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
-        setLoading(true);
         e.preventDefault();
-        // Clear previous errors
+        setLoading(true);
         setError("");
+        setUsernameError(""); 
+        setEmailError(""); 
+        setPasswordError("");
 
         if (password !== confirmPassword) {
             setError("Passwords do not match!");
@@ -34,16 +43,40 @@ function RegisterForm({ route, method }) {
             alert("User registered successfully!")
             navigate("/login")
 
+        // } catch (error) {
+        //     alert(error)
+        // } finally {
+        //     setLoading(false)
+        // }
+
         } catch (error) {
-            alert(error)
+            // Handle specific backend errors
+            if (error.response && error.response.data) {
+                const errData = error.response.data;
+                
+                // Check for specific errors returned from the server
+                if (errData.username) {
+                    setUsernameError(errData.username); // Set username error message
+                }
+                if (errData.email) {
+                    setEmailError(errData.email); // Set email error message
+                }
+                if (errData.non_field_errors) {
+                    setError(errData.non_field_errors[0]); // General error message
+                }
+            } else {
+                setError("An unexpected error occurred. Please try again.");
+            }
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
+
     };
 
     return (
         <form onSubmit={handleSubmit} className="register-form-container">
             <h1>Register</h1>
+
             <input
                 className="register-form-input"
                 type="text"
@@ -52,6 +85,8 @@ function RegisterForm({ route, method }) {
                 placeholder="Username"
                 required
             />
+            {usernameError && <p className="error-message">{usernameError}</p>} {/* Display username error */}
+
             <input
                 className="register-form-input"
                 type="email"
@@ -60,6 +95,8 @@ function RegisterForm({ route, method }) {
                 placeholder="Email"
                 required
             />
+            {emailError && <p className="error-message">{emailError}</p>} {/* Display email error */}
+
             <input
                 className="register-form-input"
                 type="password"
@@ -68,6 +105,7 @@ function RegisterForm({ route, method }) {
                 placeholder="Password"
                 required
             />
+
             <input
                 className="register-form-input"
                 type="password"
@@ -76,7 +114,12 @@ function RegisterForm({ route, method }) {
                 placeholder="Confirm Password"
                 required
             />
+            {passwordError && <p className="error-message">{passwordError}</p>} {/* Display password mismatch error */}
+
+            {error && <p className="error-message">{error}</p>} {/* Display general error */}
+
             {loading && <LoadingIndicator />}
+
             <button className="register-form-button" type="submit">
                 Register
             </button>

@@ -34,3 +34,9 @@
   .register-form-button:hover {
     background-color: #993181;
   }
+
+.error-message {
+  color: #c80f0f;
+  font-size: 18px;
+  margin: 0px 0px ;
+}
