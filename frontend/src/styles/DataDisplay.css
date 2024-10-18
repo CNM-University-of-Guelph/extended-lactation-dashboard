@@ -60,13 +60,16 @@ tbody tr:nth-child(even) {
 }
 
 .spinner {
-  margin: 100px auto;
-  width: 50px;
-  height: 50px;
-  border: 5px solid rgba(0, 0, 0, 0.1);
+  width: 80px; 
+  height: 80px; 
+  border: 8px solid rgba(0, 0, 0, 0.1);
   border-top-color: #e31a1a;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+  margin: auto;
 }
 
 @keyframes spin {
