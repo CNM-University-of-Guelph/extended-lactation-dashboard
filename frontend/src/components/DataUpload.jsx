@@ -1,11 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../api";
 import "../styles/DataUpload.css"
 
-function DataUpload({ fetchFiles }) {
+function DataUpload({ fetchFiles, userId }) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [message, setMessage] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
+    const [logs, setLogs] = useState([])
+
+    useEffect(() => {
+        let socket;
+    
+        const connectWebSocket = () => {
+            socket = new WebSocket(`ws://localhost:8000/ws/data-upload/${userId}/`);
+    
+            socket.onopen = () => {
+                console.log("WebSocket connection opened.");
+            };
+    
+            socket.onmessage = (e) => {
+                const data = JSON.parse(e.data);
+                const message = data.message;
+                setLogs((prevLogs) => [...prevLogs, message]);
+            };
+    
+            socket.onclose = () => {
+                console.log("WebSocket connection closed. Retrying in 3 seconds...");
+                setTimeout(connectWebSocket, 3000); // Retry after 3 seconds
+            };
+    
+            socket.onerror = (error) => {
+                console.error("WebSocket error:", error);
+            };
+        };
+    
+        connectWebSocket();
+    
+        return () => {
+            if (socket) socket.close();
+        };
+    }, [userId]);
 
     // Handle file selection
     const handleFileChange = (e) => {
@@ -53,6 +87,13 @@ function DataUpload({ fetchFiles }) {
     return (
         <div className="data-upload-container">
             <h2>Upload Data</h2>
+
+            {/* Log Terminal */}
+            <div className="log-terminal">
+                {logs.map((log, index) => (
+                    <p key={index}>{log}</p>
+                ))}
+            </div>
 
             {/* Upload button */}
             <input type="file" onChange={handleFileChange} />

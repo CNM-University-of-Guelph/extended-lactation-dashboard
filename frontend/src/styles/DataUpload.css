@@ -1,6 +1,6 @@
 .data-upload-container {
     position: fixed; /* Sticks to the top-left corner */
-    top: 150px;       /* Offset from the top */
+    top: 90px;       /* Offset from the top */
     left: 20px;      /* Offset from the left */
     width: 33%;      /* 1/3 of the screen width */
     padding: 20px;   /* Padding inside the widget */
@@ -28,4 +28,13 @@
 .upload-button:hover {
     background-color: #b32424; /* Darker red on hover */
     cursor: not-allowed;
+}
+
+.log-terminal {
+    background-color: #00ab83;
+    color: rgb(20, 4, 11);
+    padding: 10px;
+    height: 200px;
+    overflow-y: scroll;
+    font-family: monospace;
 }
