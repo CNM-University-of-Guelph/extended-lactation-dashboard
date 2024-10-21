@@ -1,15 +1,17 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import api from "../api"
 import { useNavigate, Link } from "react-router-dom"
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants"
 import "../styles/LoginForm.css"
 import LoadingIndicator from "./LoadingIndicator"
+import { UserContext } from "../UserContext.jsx";
 
 function LoginForm({ route, method }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { setUser } = useContext(UserContext)
 
     const name = method === "login" ? "Login" : "Register";
 
@@ -23,6 +25,14 @@ function LoginForm({ route, method }) {
                 // Save JWT tokens to localStorage
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
+
+                // Set the default Authorization header for future requests
+                api.defaults.headers.common['Authorization'] = `Bearer ${res.data.access}`;
+
+                // Fetch user info from backend
+                const userRes = await api.get('/api/auth/user/');
+                setUser(userRes.data);             
+
                 navigate("/")   // Navigate to Home after login
             } else {
                 navigate("/login")  // After registration go to login page
