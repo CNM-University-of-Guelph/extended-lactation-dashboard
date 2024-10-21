@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "api",
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -147,3 +148,11 @@ CORS_ALLOWS_CREDENTIALS = True # TODO Specify before deploying
 
 MEDIA_URL = "/media/"   # URL where media files can be accessed
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+ASGI_APPLICATION = "backend.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Use Redis in production
+    },
+}
