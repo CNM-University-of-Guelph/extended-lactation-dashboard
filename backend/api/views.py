@@ -83,6 +83,7 @@ class DataUploadView(APIView):
             data = pd.read_csv(file_path)
 
         except Exception as e:
+            self.send_progress_message(request.user.id, f"Error loading file: {str(e)}")
             return Response(
                 {"message": f"Error processing file: {str(e)}"}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -91,7 +92,9 @@ class DataUploadView(APIView):
         # Process uploaded file
         try:
             self.send_progress_message(request.user.id, "Validating data...")
-            validated_data, eligible_lactations = validate(data)
+            validated_data, eligible_lactations, validation_messages = validate(data)
+            for msg in validation_messages:
+                self.send_progress_message(request.user.id, msg)
 
             self.send_progress_message(request.user.id, "Cleaning data...")
             cleaned_data = clean(validated_data)
@@ -112,6 +115,7 @@ class DataUploadView(APIView):
             self.send_progress_message(request.user.id, "Processing complete!")
 
         except ValueError as e:
+            self.send_progress_message(request.user.id, f"Error: {str(e)}")
             return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({
@@ -330,7 +334,7 @@ class DataUploadView(APIView):
         
         return None
 
-    def store_prediction(slef, lactation, prediction, extrapolations):
+    def store_prediction(self, lactation, prediction, extrapolations):
         """
         Store the prediction in the database.
 

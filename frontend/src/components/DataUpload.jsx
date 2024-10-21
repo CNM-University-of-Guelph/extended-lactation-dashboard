@@ -21,7 +21,10 @@ function DataUpload({ fetchFiles, userId }) {
             socket.onmessage = (e) => {
                 const data = JSON.parse(e.data);
                 const message = data.message;
-                setLogs((prevLogs) => [...prevLogs, message]);
+
+                // Split the message by line breaks and add each line as a new log entry
+                const splitMessages = message.split('\n');
+                setLogs((prevLogs) => [...prevLogs, ...splitMessages]);
             };
     
             socket.onclose = () => {
@@ -91,7 +94,8 @@ function DataUpload({ fetchFiles, userId }) {
             {/* Log Terminal */}
             <div className="log-terminal">
                 {logs.map((log, index) => (
-                    <p key={index}>{log}</p>
+                    // <p key={index}>{log}</p>
+                    <p key={index} style={{ margin: 3 }}>{log}</p>
                 ))}
             </div>
 
