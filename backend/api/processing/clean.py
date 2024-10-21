@@ -8,8 +8,9 @@ import statsmodels.api as sm
 
 
 def clean(df: pd.DataFrame) -> pd.DataFrame:
+    messages = []
     data_grouped = df.groupby(by=["Cow", "Parity"])
-    print(f"Number of unique lacations: {data_grouped.ngroups}")
+    messages.append(f"Detected {data_grouped.ngroups} unique lacations")
 
     # Correct parity
     parity_corrected_data = parity_correction(df)
@@ -45,7 +46,7 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     columns_to_drop = ['my_residual', 'residual_sd', 'SD_ratio', 'SD_from_fitted', 'is_outlier', 'SmoothedMilkTotal']
     lactations_smoothed = lactations_smoothed_outliers.drop(columns=columns_to_drop)
          
-    return lactations_smoothed
+    return lactations_smoothed, messages
 
 
 def find_gaps_and_calving_dates(

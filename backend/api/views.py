@@ -1,5 +1,6 @@
 import logging
 import os
+import traceback
 
 from django.conf import settings
 from django.http import FileResponse
@@ -97,8 +98,10 @@ class DataUploadView(APIView):
                 self.send_progress_message(request.user.id, msg)
 
             self.send_progress_message(request.user.id, "Cleaning data...")
-            cleaned_data = clean(validated_data)
-            
+            cleaned_data, cleaning_messages = clean(validated_data)
+            for msg in cleaning_messages:
+                self.send_progress_message(request.user.id, msg)
+
             self.send_progress_message(request.user.id, "Storing lactation data...")
             self.store_lactation_data(
                 cleaned_data, eligible_lactations, request.user
@@ -106,7 +109,7 @@ class DataUploadView(APIView):
 
             self.send_progress_message(request.user.id, "Creating input features...")
             self.create_input_features(
-                eligible_lactations, cleaned_data
+                eligible_lactations, cleaned_data, request.user
             )
 
             self.send_progress_message(request.user.id, "Making predictions...")
@@ -115,7 +118,8 @@ class DataUploadView(APIView):
             self.send_progress_message(request.user.id, "Processing complete!")
 
         except ValueError as e:
-            self.send_progress_message(request.user.id, f"Error: {str(e)}")
+            error_traceback = traceback.format_exc() 
+            self.send_progress_message(request.user.id, f"Error: {str(e)}\n{error_traceback}")
             return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({
@@ -140,6 +144,10 @@ class DataUploadView(APIView):
                                 (cleaned_data['Parity'].isin([parity, parity - 1]))]
             
             if subset.empty:
+                self.send_progress_message(
+                    user.id, 
+                    f"Warning: No data found for Cow {cow_id}, Parity {parity}. Skipping..."
+                )
                 continue
 
             # Process and store each row in the subset
@@ -160,7 +168,7 @@ class DataUploadView(APIView):
                     }
                 )
 
-    def create_input_features(self, eligible_lactations: list, cleaned_data: pd.DataFrame):
+    def create_input_features(self, eligible_lactations: list, cleaned_data: pd.DataFrame, user):
         for cow_id, parity in eligible_lactations:
             if parity > 1:
                 current_lactation = cleaned_data[
@@ -173,7 +181,10 @@ class DataUploadView(APIView):
         
                 # Skip if no current lactation data exists
                 if current_lactation.empty:
-                    print(f"No data for current lactation of Cow {cow_id}, Parity {parity}")
+                    self.send_progress_message(
+                        user_id=user.id,
+                        message=f"No data for current lactation of Cow {cow_id}, Parity {parity}. Skipping..."
+                    )
                     continue
 
                 features = multi_feature_construction(
@@ -187,14 +198,20 @@ class DataUploadView(APIView):
                 
                 # Skip if no current lactation data exists
                 if current_lactation.empty:
-                    print(f"No data for current lactation of Cow {cow_id}, Parity {parity}")
+                    self.send_progress_message(
+                        user_id=user.id,
+                        message=f"No data for current lactation of Cow {cow_id}, Parity {parity}. Skipping..."
+                    )
                     continue
 
                 features = primi_feature_construction(current_lactation)
 
 
             if features.empty:
-                print(f"Features for Cow {cow_id} and Parity {parity} is empty.")
+                self.send_progress_message(
+                    user_id=user.id,
+                    message=f"Error creating features for Cow {cow_id} and Parity {parity}. Skipping..."
+                )
                 continue
 
             try:
@@ -203,7 +220,10 @@ class DataUploadView(APIView):
                     )
                 
             except Lactation.DoesNotExist:
-                print(f"Lactation for Cow {cow_id} and Parity {parity} not found.")
+                self.send_progress_message(
+                    user_id=user.id,
+                    message=f"Lactation for Cow {cow_id} and Parity {parity} not found. Skipping..."
+                )
                 continue
             
             self.store_features(lactation, parity, features)
