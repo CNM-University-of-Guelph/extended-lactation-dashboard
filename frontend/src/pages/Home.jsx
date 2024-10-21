@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Navbar from "../components/Navbar";
 import DataUpload from "../components/DataUpload";
 import TreatmentSidebar from "../components/TreatmentSidebar";
@@ -6,6 +6,7 @@ import DataControl from "../components/DataControl";
 import DataDisplay from "../components/DataDisplay";
 import api from "../api";
 import Papa from "papaparse";
+import { UserContext } from "../UserContext.jsx";
 
 function Home() {
     const [isSidebarHidden, setIsSidebarHidden] = useState(true);
@@ -18,6 +19,8 @@ function Home() {
     const [loading, setLoading] = useState(false);
     const [files, setFiles] = useState([]);
   
+    const { user } = useContext(UserContext);
+
     // Function to toggle sidebar visibility
     const toggleSidebar = () => {
         setIsSidebarHidden(!isSidebarHidden);
@@ -83,7 +86,7 @@ function Home() {
             toggleSidebar={toggleSidebar}
           />
           <div className="left-container">
-            <DataUpload fetchFiles={fetchFiles}/>
+            <DataUpload fetchFiles={fetchFiles} userId={user?.id}/>
             <DataControl
               dataType={dataType}
               setDataType={setDataType}
