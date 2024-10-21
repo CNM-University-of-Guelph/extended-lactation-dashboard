@@ -8,8 +8,9 @@ import { UserContext } from "../UserContext.jsx";
 function ProtectedRoute({ children }) {
     const [isAuthorized, setIsAuthorized] = useState(null);
     const { user } = useContext(UserContext);
+    const token = localStorage.getItem(ACCESS_TOKEN);
 
-    if (!user) {
+    if (!user && !token) {
         return <Navigate to="/login" replace />;
     }
 

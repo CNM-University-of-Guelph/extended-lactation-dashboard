@@ -32,7 +32,8 @@ function LoginForm({ route, method }) {
                 // Fetch user info from backend
                 const userRes = await api.get('/api/auth/user/');
                 setUser(userRes.data);             
-
+                localStorage.setItem('user', JSON.stringify(userRes.data));
+                
                 navigate("/")   // Navigate to Home after login
             } else {
                 navigate("/login")  // After registration go to login page
