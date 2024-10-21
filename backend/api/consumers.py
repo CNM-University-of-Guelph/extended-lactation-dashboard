@@ -14,10 +14,6 @@ class DataUploadConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
-        await self.send(text_data=json.dumps({
-            'message': f'Connected to WebSocket as user {self.user_id}'
-        }))
-
     async def disconnect(self, close_code):
         # Leave group
         await self.channel_layer.group_discard(
