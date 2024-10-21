@@ -39,6 +39,12 @@ class UserSerializer(serializers.ModelSerializer):
         return user
  
 
+class CurrentUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email"]
+        
+
 class LactationDataSerializer(serializers.ModelSerializer):
     cow_id = serializers.CharField(source='lactation.cow.cow_id')
     parity = serializers.IntegerField(source='lactation.parity')

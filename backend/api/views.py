@@ -25,7 +25,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 from .models import UploadFile, Cow, Lactation, LactationData, MultiparousFeatures, Prediction, PrimiparousFeatures
-from .serializers import LactationDataSerializer, MultiparousFeaturesSerializer, PrimiparousFeaturesSerializer
+from .serializers import LactationDataSerializer, MultiparousFeaturesSerializer, PrimiparousFeaturesSerializer, CurrentUserSerializer
 from .processing.validate import validate
 from .processing.clean import clean
 from .processing.multi_features import multi_feature_construction
@@ -43,7 +43,7 @@ class CurrentUserView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        serializer = UserSerializer(request.user)
+        serializer = CurrentUserSerializer(request.user)
         return Response(serializer.data)
 
 
