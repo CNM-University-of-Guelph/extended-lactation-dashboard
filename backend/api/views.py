@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import joblib
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 from .models import UploadFile, Cow, Lactation, LactationData, MultiparousFeatures, Prediction, PrimiparousFeatures
 from .serializers import LactationDataSerializer, MultiparousFeaturesSerializer, PrimiparousFeaturesSerializer
@@ -37,9 +39,28 @@ class CreateUserView(generics.CreateAPIView):
     permission_classes = [AllowAny] # Anyone can register
 
 
+class CurrentUserView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+
 class DataUploadView(APIView):
     parser_classes = [MultiPartParser]  # To handle file uploads
     permission_classes = [IsAuthenticated]  # Ensure user is authenticated
+
+    def send_progress_message(self, user_id, message):
+        channel_layer = get_channel_layer()
+        group_name = f'user_{user_id}'
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                'type': 'data_processing_message',
+                'message': message
+            }
+        )
 
     def post(self, request, *args, **kwargs):
         file_obj = request.FILES.get("file")
@@ -69,18 +90,26 @@ class DataUploadView(APIView):
 
         # Process uploaded file
         try:
+            self.send_progress_message(request.user.id, "Validating data...")
             validated_data, eligible_lactations = validate(data)
+
+            self.send_progress_message(request.user.id, "Cleaning data...")
             cleaned_data = clean(validated_data)
             
+            self.send_progress_message(request.user.id, "Storing lactation data...")
             self.store_lactation_data(
                 cleaned_data, eligible_lactations, request.user
             )
 
+            self.send_progress_message(request.user.id, "Creating input features...")
             self.create_input_features(
                 eligible_lactations, cleaned_data
             )
 
+            self.send_progress_message(request.user.id, "Making predictions...")
             self.make_prediction(eligible_lactations, request)
+
+            self.send_progress_message(request.user.id, "Processing complete!")
 
         except ValueError as e:
             return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
