@@ -10,6 +10,7 @@ function LoginForm({ route, method }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
     const { setUser } = useContext(UserContext)
 
@@ -17,7 +18,19 @@ function LoginForm({ route, method }) {
 
     const handleSubmit = async (e) => {
         setLoading(true);
+        setError("");
         e.preventDefault();
+
+        if (!username) {
+            setError("Username can't be empty.");
+            setLoading(false);
+            return;
+        }
+        if (!password) {
+            setError("Password can't be empty.");
+            setLoading(false);
+            return;
+        }
 
         try {
             const res = await api.post(route, { username, password })
@@ -39,7 +52,22 @@ function LoginForm({ route, method }) {
                 navigate("/login")  // After registration go to login page
             }
         } catch (error) {
-            alert(error)
+            if (error.response) {
+                if (error.response.status === 401) {
+                    setError("Invalid username or password.");
+                } else {
+                    setError("Something went wrong. Please try again.");
+                }
+            } else if (error.request) {
+                // Request was made but no response received
+                setError("Server unreachable. Please check your network connection.");
+            } else if (error.code === 'ECONNABORTED') {
+                // Request timeout
+                setError("Request timed out. Please try again.");
+            } else {
+                // Other errors
+                setError("An unexpected error occurred. Please try again.");
+            }
         } finally {
             setLoading(false)
         }
@@ -48,6 +76,7 @@ function LoginForm({ route, method }) {
     return (
         <form onSubmit={handleSubmit} className="login-form-container">
             <h1>{name}</h1>
+            {error && <div className="error-message">{error}</div>}
             <input
                 className="login-form-input"
                 type="text"
