@@ -11,4 +11,8 @@ urlpatterns = [
     path('lactation-data/', views.LactationDataListView.as_view(), name="lactation-data"),
     path('multiparous-features/', views.MultiparousFeaturesListView.as_view(), name="multiparous-features"),
     path('primiparous-features/', views.PrimiparousFeaturesListView.as_view(), name="primiparous-features"),
+    path('profile/info/', views.CurrentUserView.as_view(), name='user-info'),
+    path('profile/change-password/', views.ChangePasswordView.as_view(), name='change-password'),
+    path('profile/change-email/', views.ChangeEmailView.as_view(), name='change-email'),
+    path('profile/delete/', views.DeleteUserView.as_view(), name='delete-account'),
 ]

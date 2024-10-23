@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from .models import LactationData, MultiparousFeatures, PrimiparousFeatures
@@ -44,6 +45,40 @@ class CurrentUserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "username", "email"]
         
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email"]
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+
+    def validate_new_password(self, value):
+        try:
+            validate_password(value)
+        except ValidationError as e:
+            raise serializers.ValidationError(str(e))
+        return value
+
+
+class ChangeEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+    def validate_email(self, value):
+        """
+        Check that the email is unique.
+        """
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already in use.")
+        return value
+
+# Serializer for deleting the account
+class DeleteUserSerializer(serializers.Serializer):
+    confirm = serializers.BooleanField()
+
 
 class LactationDataSerializer(serializers.ModelSerializer):
     cow_id = serializers.CharField(source='lactation.cow.cow_id')

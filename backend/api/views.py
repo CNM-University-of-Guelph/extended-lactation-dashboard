@@ -26,7 +26,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 from .models import UploadFile, Cow, Lactation, LactationData, MultiparousFeatures, Prediction, PrimiparousFeatures
-from .serializers import LactationDataSerializer, MultiparousFeaturesSerializer, PrimiparousFeaturesSerializer, CurrentUserSerializer
+from .serializers import LactationDataSerializer, MultiparousFeaturesSerializer, PrimiparousFeaturesSerializer, CurrentUserSerializer, ChangePasswordSerializer, ChangeEmailSerializer
 from .processing.validate import validate
 from .processing.clean import clean
 from .processing.multi_features import multi_feature_construction
@@ -40,12 +40,64 @@ class CreateUserView(generics.CreateAPIView):
     permission_classes = [AllowAny] # Anyone can register
 
 
-class CurrentUserView(generics.CreateAPIView):
+class CurrentUserView(generics.RetrieveAPIView):
+    serializer_class = CurrentUserSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        serializer = CurrentUserSerializer(request.user)
-        return Response(serializer.data)
+    def get_object(self):
+        return self.request.user
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            old_password = serializer.validated_data['old_password']
+            new_password = serializer.validated_data['new_password']
+            if not user.check_password(old_password):
+                return Response({'old_password': 'Incorrect password.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            user.set_password(new_password)
+            user.save()
+            return Response({'message': 'Password updated successfully.'}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangeEmailView(generics.UpdateAPIView):
+    serializer_class = ChangeEmailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            new_email = serializer.validated_data['email']
+            user.email = new_email
+            user.save()
+            return Response({"message": "Email updated successfully."}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DeleteUserView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        user = request.user
+        confirm = request.data.get('confirm', False)
+
+        if not confirm:
+            return Response({'detail': 'Account deletion not confirmed.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.delete()
+        return Response({'message': 'Account deleted successfully.'}, status=status.HTTP_200_OK)
 
 
 class DataUploadView(APIView):
