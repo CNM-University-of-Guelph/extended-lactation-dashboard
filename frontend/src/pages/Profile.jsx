@@ -1,10 +1,11 @@
 import Navbar from "../components/Navbar";
+import ProfilePage from "../components/ProfilePage";
 
 function Profile() {
     return (
         <div>
             <Navbar />
-            <h1>Profile Page</h1>
+            <ProfilePage/>
         </div>
     );
 }
