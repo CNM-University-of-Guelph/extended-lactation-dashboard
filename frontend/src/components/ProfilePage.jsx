@@ -7,7 +7,9 @@ function ProfilePage() {
     const [userInfo, setUserInfo] = useState(null);
     const [passwords, setPasswords] = useState({ old_password: '', new_password: '', confirm_new_password: '' });
     const [newEmail, setNewEmail] = useState('');
-    const [message, setMessage] = useState('');
+    const [accountMessage, setAccountMessage] = useState('');
+    const [passwordMessage, setPasswordMessage] = useState('');
+    const [emailMessage, setEmailMessage] = useState('');
     const [messageType, setMessageType] = useState('');
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -29,7 +31,7 @@ function ProfilePage() {
 
     const handlePasswordChange = async () => {
         if (passwords.new_password !== passwords.confirm_new_password) {
-            setMessage("New passwords do not match.");
+            setPasswordMessage("New passwords do not match.");
             setMessageType('error');
             return;
         }
@@ -41,15 +43,15 @@ function ProfilePage() {
             });
     
             if (response.status === 200) {
-                setMessage("Password updated successfully.");
+                setPasswordMessage("Password updated successfully.");
                 setMessageType('success');
                 setPasswords({ old_password: '', new_password: '', confirm_new_password: '' });
             }
         } catch (error) {
             if (error.response && error.response.data && error.response.data.new_password) {
-                setMessage(`Error: ${error.response.data.new_password[0]}`);
+                setPasswordMessage(`Error: ${error.response.data.new_password[0]}`);
             } else {
-                setMessage("Failed to update password.");
+                setPasswordMessage("Failed to update password.");
             }
             setMessageType('error');
         }
@@ -58,10 +60,10 @@ function ProfilePage() {
     const handleEmailChange = async () => {
         try {
             await api.put("/api/profile/change-email/", { email: newEmail });
-            setMessage("Email updated successfully.");
+            setEmailMessage("Email updated successfully.");
             setMessageType('success');
         } catch (error) {
-            setMessage("Failed to update email.");
+            setEmailMessage("Failed to update email.");
             setMessageType('error');
         }
     };
@@ -70,13 +72,13 @@ function ProfilePage() {
         if (deleteConfirm) {
             try {
                 await api.delete("/api/profile/delete/", { data: { confirm: true } });
-                setMessage("Account deleted successfully.");
+                setAccountMessage("Account deleted successfully.");
                 setMessageType('success');
                 setShowDeletePopup(false);
                 localStorage.clear();
                 navigate("/login");
             } catch (error) {
-                setMessage("Failed to delete account.");
+                setAccountMessage("Failed to delete account.");
                 setMessageType('error')
             }
         }
@@ -122,6 +124,7 @@ function ProfilePage() {
                     onChange={(e) => setPasswords({ ...passwords, confirm_new_password: e.target.value })}
                 />
                 <button onClick={handlePasswordChange}>Update Password</button>
+                {passwordMessage && <p className={messageType === 'error' ? 'error-message' : 'success-message'}>{passwordMessage}</p>}
             </div>
     
             {/* Change Email */}
@@ -135,12 +138,14 @@ function ProfilePage() {
                     onChange={(e) => setNewEmail(e.target.value)}
                 />
                 <button onClick={handleEmailChange}>Update Email</button>
+                {emailMessage && <p className={messageType === 'error' ? 'error-message' : 'success-message'}>{emailMessage}</p>}
             </div>
     
             {/* Delete Account */}
             <div className="profile-form">
                 <h2>Delete Account</h2>
                 <button onClick={() => setShowDeletePopup(true)}>Delete Account</button>
+                {accountMessage && <p className={messageType === 'error' ? 'error-message' : 'success-message'}>{accountMessage}</p>}
             </div>
 
             {/* Popup for Account Deletion Confirmation */}
@@ -173,9 +178,6 @@ function ProfilePage() {
                     </div>
                 </div>
             )}
-    
-            {/* Success or Error Message */}
-            {message && <p className={messageType === 'error' ? 'error-message' : 'success-message'}>{message}</p>}
         </div>
     );
 }
