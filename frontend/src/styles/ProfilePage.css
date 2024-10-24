@@ -1,0 +1,191 @@
+/* Profile Page Container */
+.profile-page-container {
+    max-width: 800px;
+    margin: 100px auto;
+    padding: 40px 20px;
+    background-color: #f7f9fc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+/* Header */
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.profile-header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.profile-header button {
+    padding: 8px 16px;
+    background-color: #d9534f;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.profile-header button:hover {
+    background-color: #c9302c;
+}
+
+/* User Info Summary */
+.user-info-summary {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.user-info-summary h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.user-info-summary p {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #666;
+}
+
+/* Form Section */
+.profile-form {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.profile-form h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.profile-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #666;
+}
+
+.profile-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.profile-form button {
+    padding: 10px 20px;
+    background-color: #337ab7;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.profile-form button:hover {
+    background-color: #286090;
+}
+
+/* Error Messages */
+.error-message {
+    color: #d9534f;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Success Messages */
+.success-message {
+    color: #5cb85c;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+/* Popup Container */
+.popup-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Confirm Delete Button */
+.confirm-delete-button {
+    background-color: red;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.confirm-delete-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Cancel Button */
+.cancel-button {
+    background-color: #666;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+/* Error/Success Messages */
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+.success-message {
+    color: green;
+    margin-top: 10px;
+}
+
+.confirm-delete-section {
+    display: flex;
+    align-items: center;
+}
+
+.confirm-delete-section span {
+    white-space: nowrap; /* Prevent line breaks */
+}
