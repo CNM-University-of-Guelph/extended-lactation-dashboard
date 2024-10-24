@@ -62,6 +62,15 @@ class ChangePasswordSerializer(serializers.Serializer):
         except ValidationError as e:
             raise serializers.ValidationError(str(e))
         return value
+    
+    def validate(self, data):
+        old_password = data.get('old_password')
+        new_password = data.get('new_password')
+
+        if not old_password or not new_password:
+            raise serializers.ValidationError("Both old and new passwords are required.")
+        
+        return data
 
 
 class ChangeEmailSerializer(serializers.Serializer):

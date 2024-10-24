@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
+from django.contrib.auth import update_session_auth_hash
 
 from rest_framework import generics, status
 from api.serializers import UserSerializer
@@ -59,11 +60,15 @@ class ChangePasswordView(generics.UpdateAPIView):
         if serializer.is_valid():
             old_password = serializer.validated_data['old_password']
             new_password = serializer.validated_data['new_password']
+            
             if not user.check_password(old_password):
                 return Response({'old_password': 'Incorrect password.'}, status=status.HTTP_400_BAD_REQUEST)
 
             user.set_password(new_password)
             user.save()
+
+            update_session_auth_hash(request, user)
+
             return Response({'message': 'Password updated successfully.'}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
