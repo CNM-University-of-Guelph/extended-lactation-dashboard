@@ -57,7 +57,6 @@ function RegisterForm({ route, method }) {
                 password,
                 confirmPassword
             });
-            alert("User registered successfully!")
             navigate("/login")
 
         } catch (error) {
@@ -169,7 +168,7 @@ function RegisterForm({ route, method }) {
 
             {method == "register" && (
                 <p>
-                    Already have an account? <Link to="/login">Login here</Link>
+                    Already have an account? <Link to="/login" className="login-link">Login here</Link>
                 </p>
             )}
         </form>

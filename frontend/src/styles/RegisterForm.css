@@ -3,55 +3,65 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 50px auto;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-  }
-  
-  .register-form-input {
+    margin: 0 auto;
     width: 90%;
+    padding: 10px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    background-color: var(--primary-colour);
+}
+  
+.register-form-input {
+    width: 80%;
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-  }
+}
   
-  .register-form-button {
-    width: 95%;
-    padding: 10px;
+.register-form-button {
+    width: 40%;
+    padding: 15px;
     margin: 20px 0;
-    background-color: #b1b112;
-    color: white;
+    background-color: var(--accent-colour);
+    color: var(--text-colour);
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 18px;
   }
   
-  .register-form-button:hover {
-    background-color: #993181;
-  }
+.register-form-button:hover {
+    background-color: var(--accent-colour-dark);
+}
 
 .error-message {
-  color: #c80f0f;
+  color: var(--error-colour);
+  background-color: var(--tertiary-colour);
+  padding: 6px;
+  border-radius: 4px;
   font-size: 18px;
   margin: 0px 0px ;
 }
 
 .password-strength {
-  margin-top: 10px;
-  font-size: 14px;
+  margin-top: -15px;
+}
+
+.password-strength p {
+  font-size: 18px;
 }
 
 .strength-bar {
   width: 100%;
   height: 10px;
-  background-color: #ddd;
+  background-color: var(--tertiary-colour);
   border-radius: 5px;
-  margin-top: 5px;
+  margin-top: -10px;
 }
 
 .strength-bar-fill {
@@ -77,4 +87,15 @@
 
 .strength-4 .strength-bar-fill {
   background-color: #4caf50; /* Strong */
+}
+
+.login-link {
+  color: var(--tertiary-colour); /* Use the accent color for link */
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+
+.login-link:hover {
+  color: var(--tertiary-colour-dark); /* Darker accent color on hover */
 }
