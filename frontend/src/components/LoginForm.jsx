@@ -75,7 +75,7 @@ function LoginForm({ route, method }) {
 
     return (
         <form onSubmit={handleSubmit} className="login-form-container">
-            <h1>{name}</h1>
+            <h1>Extended Lactation Dashboard</h1>
             {error && <div className="error-message">{error}</div>}
             <input
                 className="login-form-input"
@@ -93,13 +93,13 @@ function LoginForm({ route, method }) {
             />
             {loading && <LoadingIndicator />}
             <button className="login-form-button" type="submit">
-                {name}
+                Login
             </button>
 
             {/* Add link to registration page */}
             {method == "login" && (
                 <p>
-                    Don't have an account? <Link to="/register">Register here</Link>
+                    Don't have an account? <Link to="/register" className="register-link">Register here</Link>
                 </p>
             )}
         </form>
