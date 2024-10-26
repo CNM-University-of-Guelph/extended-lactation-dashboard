@@ -1,0 +1,36 @@
+:root {
+    --primary-colour: #77A6F7;
+
+    --secondary-colour: #00887A;
+    
+    --tertiary-colour: #D3E3FC;
+    --tertiary-colour-dark: #ebf2fe;
+    
+    --accent-colour: #FFCCBC;
+    --accent-colour-dark: #ff9e80;
+    
+    --background-colour: #FFFFFF;
+    
+    --text-colour: #000000;
+
+    --font-family-header: "Nunito Sans", sans-serif;
+    --font-family-body: "Gruppo", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family-header);
+    font-weight: 700;
+}
+
+body {
+    font-family: var(--font-family-body);
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-colour);
+}
+
+p, input, button {
+    font-family: var(--font-family-base);
+    font-weight: 400;
+}
