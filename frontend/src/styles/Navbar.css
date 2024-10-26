@@ -3,8 +3,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background-color: #1B1B1B; /* Main background color */
-    color: #E0E0E0; /* Text color */
+    background-color: var(--primary-colour);
+    color: var(--text-colour);
     width: 100%;  /* Make the navbar fill the width of the page */
     position: fixed;  /* Pin the navbar to the top */
     top: 0;  /* Align at the top of the page */
@@ -23,7 +23,7 @@
 }
 
 .nav-list a {
-    color: #E0CA3C; /* Accent color for links */
+    color: var(--tertiary-colour); /* Accent color for links */
     text-decoration: none;
     font-size: 1.2em; 
 }
@@ -32,9 +32,14 @@
     text-decoration: underline;
 }
 
+.nav-list a.active-link {
+    font-weight: bold;
+    color: var(--secondary-colour) !important;  /* Highlight color */
+}
+
 .logout-button {
-    background-color: #e31a1a; /* Red for logout */
-    color: white;
+    background-color: var(--accent-colour); /* Red for logout */
+    color: var(--text-colour);
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -43,10 +48,5 @@
 }
 
 .logout-button:hover {
-    background-color: #b32424; /* Darker red on hover */
-}
-
-.nav-list a.active-link {
-    font-weight: bold;
-    color: #e210d8 !important;  /* Highlight color */
+    background-color: var(--accent-colour-dark); /* Darker red on hover */
 }
