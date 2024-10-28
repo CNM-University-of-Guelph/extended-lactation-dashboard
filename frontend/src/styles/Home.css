@@ -21,4 +21,5 @@
 .data-display-container {
     grid-column: 2 / 3; /* Second column */
     align-self: stretch;
+    width: 95%;
 }
