@@ -3,7 +3,7 @@
     max-width: 800px;
     margin: 100px auto;
     padding: 40px 20px;
-    background-color: #f7f9fc;
+    background-color: var(--primary-colour);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
@@ -18,28 +18,15 @@
 }
 
 .profile-header h1 {
-    font-size: 24px;
+    font-size: 36px;
     font-weight: bold;
-    color: #333;
-}
-
-.profile-header button {
-    padding: 8px 16px;
-    background-color: #d9534f;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.profile-header button:hover {
-    background-color: #c9302c;
+    color: var(--text-colour);
+    margin: 0;
 }
 
 /* User Info Summary */
 .user-info-summary {
-    background-color: #fff;
+    background-color: var(--tertiary-colour);
     padding: 20px;
     margin-bottom: 20px;
     border: 1px solid #ccc;
@@ -47,21 +34,21 @@
 }
 
 .user-info-summary h2 {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: bold;
-    margin-bottom: 10px;
-    color: #555;
+    color: var(--text-colour);
+    margin: 0;
 }
 
 .user-info-summary p {
-    font-size: 16px;
+    font-size: 18px;
     margin: 5px 0;
-    color: #666;
+    color: var(--text-colour);
 }
 
 /* Form Section */
 .profile-form {
-    background-color: #fff;
+    background-color: var(--tertiary-colour);
     padding: 20px;
     margin-bottom: 20px;
     border: 1px solid #ccc;
@@ -69,17 +56,18 @@
 }
 
 .profile-form h2 {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: bold;
-    margin-bottom: 15px;
-    color: #555;
+    margin: 0 0 10px 0;
+    /* margin-bottom: 10px; */
+    color: var(--text-colour);
 }
 
 .profile-form label {
     display: block;
     margin-bottom: 5px;
-    font-size: 14px;
-    color: #666;
+    font-size: 16px;
+    color: var(--text-colour);
 }
 
 .profile-form input {
@@ -92,22 +80,22 @@
 
 .profile-form button {
     padding: 10px 20px;
-    background-color: #337ab7;
-    color: #fff;
+    background-color: var(--accent-colour);
+    color: var(--text-colour);
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
+    font-size: 16px;
 }
 
 .profile-form button:hover {
-    background-color: #286090;
+    background-color: var(--accent-colour-dark);
 }
 
 /* Error Messages */
 .error-message {
-    color: #d9534f;
-    font-size: 14px;
+    font-size: 18px;
     margin-bottom: 10px;
 }
 
@@ -133,7 +121,7 @@
 
 /* Popup Container */
 .popup-container {
-    background-color: #fff;
+    background-color: var(--primary-colour);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
@@ -144,13 +132,18 @@
 
 /* Confirm Delete Button */
 .confirm-delete-button {
-    background-color: red;
-    color: white;
+    background-color: var(--error-colour);
+    color: var(--text-colour);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
+    font-size: 16px;
+}
+
+.confirm-delete-button:hover {
+    background-color: var(--error-colour-dark);
 }
 
 .confirm-delete-button:disabled {
@@ -160,20 +153,27 @@
 
 /* Cancel Button */
 .cancel-button {
-    background-color: #666;
-    color: white;
+    background-color: var(--accent-colour);
+    color: var(--text-colour);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
     margin-left: 10px;
+    font-size: 16px;
+}
+
+.cancel-button:hover {
+    background-color: var(--accent-colour-dark);
 }
 
 /* Error/Success Messages */
 .error-message {
-    color: red;
+    color: var(--error-colour);
     margin-top: 10px;
+    background-color: var(--tertiary-colour-dark);
+    border-radius: 8px;
 }
 
 .success-message {
