@@ -1,16 +1,19 @@
 .data-display-container {
-  position: fixed;
-  top: 90px;
-  right: 20px;
-  width: 56%;
+  position: relative;
+  /* top: 90px; */
+  /* right: 20px; */
+  width: 90%;
+  max-width: 800px;
+  margin-top: 20px;
   padding: 20px;
-  background-color: #a8a6a6;
+  background-color: var(--primary-colour);
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  height: 600px; /* This will contain the unexpanded view */
-  display: flex;
-  flex-direction: column;
+  /* z-index: 100; */
+  /* height: 600px; This will contain the unexpanded view */
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* overflow-y: auto; */
 }
 
 .row-limit-message {

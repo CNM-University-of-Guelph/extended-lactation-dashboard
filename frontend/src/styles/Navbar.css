@@ -3,7 +3,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background-color: var(--primary-colour);
+    background-color: var(--secondary-colour);
     color: var(--text-colour);
     width: 100%;  /* Make the navbar fill the width of the page */
     position: fixed;  /* Pin the navbar to the top */
@@ -34,7 +34,7 @@
 
 .nav-list a.active-link {
     font-weight: bold;
-    color: var(--secondary-colour) !important;  /* Highlight color */
+    color: var(--accent-colour) !important;  /* Highlight color */
 }
 
 .logout-button {

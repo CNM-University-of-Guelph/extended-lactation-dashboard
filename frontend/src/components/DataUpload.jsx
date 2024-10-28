@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import api from "../api";
 import "../styles/DataUpload.css"
+import { CSSTransition } from "react-transition-group";
 
 function DataUpload({ fetchFiles, userId }) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [message, setMessage] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
     const [logs, setLogs] = useState([])
+    const [isLogVisible, setIsLogVisible] = useState(false);
+    const logTerminalRef = useRef(null);
 
     useEffect(() => {
         let socket;
@@ -62,7 +65,8 @@ function DataUpload({ fetchFiles, userId }) {
         formData.append("file", selectedFile);
 
         setIsProcessing(true);
-        setMessage("Processing file...");
+        // setMessage("Processing file...");
+        setIsLogVisible(true);
 
         try {
             const res = await api.post("/api/data/upload/", formData, {
@@ -72,7 +76,7 @@ function DataUpload({ fetchFiles, userId }) {
             });
 
             // Assuming backend sends a success message
-            setMessage("File processed successfully!");
+            setLogs((prevLogs) => [...prevLogs, "File processed successfully!"]);
             console.log("Processed file path:", res.data.processed_file); 
             fetchFiles();
 
@@ -87,28 +91,72 @@ function DataUpload({ fetchFiles, userId }) {
         }
     };
 
+    const toggleLogVisibility = () => {
+        setIsLogVisible((prev) => !prev);
+    };
+
     return (
-        <div className="data-upload-container">
+        <div className={`data-upload-container ${isLogVisible ? 'expanded' : ''}`}>
             <h2>Upload Data</h2>
 
-            {/* Log Terminal */}
-            <div className="log-terminal">
-                {logs.map((log, index) => (
-                    // <p key={index}>{log}</p>
-                    <p key={index} style={{ margin: 3 }}>{log}</p>
-                ))}
-            </div>
-
-            {/* Upload button */}
-            <input type="file" onChange={handleFileChange} />
-
-            {/* Display status or error messages */}
+            {/* Status Message */}
             {message && <p className="status-message">{message}</p>}
 
-            {/* Submit button */}
-            <button onClick={handleFileUpload} disabled={isProcessing} className="upload-button">
+            {/* Row of buttons */}
+            <div className="button-row">
+                <input type="file" onChange={handleFileChange} className="file-input" />
+
+                <button 
+                onClick={handleFileUpload} 
+                disabled={isProcessing} 
+                className="upload-button"
+                >
                 {isProcessing ? "Processing..." : "Upload Data"}
-            </button>
+                </button>
+
+                <button 
+                onClick={toggleLogVisibility} 
+                className="toggle-log-button"
+                >
+                {isLogVisible ? "Collapse Log" : "Expand Log"}
+                </button>
+
+                {/* Spinner for loading */}
+                {isProcessing && <div className="spinner"></div>}
+            </div>
+
+            {/* Log Terminal with Transition */}
+            <CSSTransition
+                in={isLogVisible}
+                timeout={300}
+                classNames="slide-height"
+                unmountOnExit
+                nodeRef={logTerminalRef}
+                onEnter={() => {
+                logTerminalRef.current.style.height = '0px';
+                }}
+                onEntering={() => {
+                logTerminalRef.current.style.height = '100px';
+                }}
+                onEntered={() => {
+                logTerminalRef.current.style.height = '100px';
+                }}
+                onExit={() => {
+                logTerminalRef.current.style.height = '100px';
+                }}
+                onExiting={() => {
+                logTerminalRef.current.style.height = '0px';
+                }}
+            >
+                  <div 
+                    className={`log-terminal ${isLogVisible ? 'visible' : ''}`}
+                    ref={logTerminalRef}
+                  >
+                {logs.map((log, index) => (
+                    <p key={index} style={{ margin: 3 }}>{log}</p>
+                ))}
+                </div>
+            </CSSTransition>
         </div>
     );
 }

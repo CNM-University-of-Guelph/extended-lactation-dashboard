@@ -7,6 +7,7 @@ import DataDisplay from "../components/DataDisplay";
 import api from "../api";
 import Papa from "papaparse";
 import { UserContext } from "../UserContext.jsx";
+import "../styles/Home.css"
 
 function Home() {
     const [isSidebarHidden, setIsSidebarHidden] = useState(true);
@@ -79,26 +80,24 @@ function Home() {
     };
 
     return (
-        <div>
+        <div className="home-container">
           <Navbar />
           <TreatmentSidebar
             isHidden={isSidebarHidden}
             toggleSidebar={toggleSidebar}
           />
-          <div className="left-container">
-            <DataUpload fetchFiles={fetchFiles} userId={user?.id}/>
-            <DataControl
-              dataType={dataType}
-              setDataType={setDataType}
-              selectedFile={selectedFile}
-              setSelectedFile={setSelectedFile}
-              cowIdFilter={cowIdFilter}
-              setCowIdFilter={setCowIdFilter}
-              parityFilter={parityFilter}
-              setParityFilter={setParityFilter}
-              files={files}
-            />
-          </div>
+          <DataUpload fetchFiles={fetchFiles} userId={user?.id}/>
+          <DataControl
+            dataType={dataType}
+            setDataType={setDataType}
+            selectedFile={selectedFile}
+            setSelectedFile={setSelectedFile}
+            cowIdFilter={cowIdFilter}
+            setCowIdFilter={setCowIdFilter}
+            parityFilter={parityFilter}
+            setParityFilter={setParityFilter}
+            files={files}
+          />
           <DataDisplay
             data={data}
             loading={loading}
