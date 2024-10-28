@@ -86,18 +86,20 @@ function Home() {
             isHidden={isSidebarHidden}
             toggleSidebar={toggleSidebar}
           />
-          <DataUpload fetchFiles={fetchFiles} userId={user?.id}/>
-          <DataControl
-            dataType={dataType}
-            setDataType={setDataType}
-            selectedFile={selectedFile}
-            setSelectedFile={setSelectedFile}
-            cowIdFilter={cowIdFilter}
-            setCowIdFilter={setCowIdFilter}
-            parityFilter={parityFilter}
-            setParityFilter={setParityFilter}
-            files={files}
-          />
+          <div className="left-column">
+              <DataUpload fetchFiles={fetchFiles} userId={user?.id} />
+              <DataControl
+                  dataType={dataType}
+                  setDataType={setDataType}
+                  selectedFile={selectedFile}
+                  setSelectedFile={setSelectedFile}
+                  cowIdFilter={cowIdFilter}
+                  setCowIdFilter={setCowIdFilter}
+                  parityFilter={parityFilter}
+                  setParityFilter={setParityFilter}
+                  files={files}
+              />
+          </div>
           <DataDisplay
             data={data}
             loading={loading}
