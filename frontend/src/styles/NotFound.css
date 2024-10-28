@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
     min-height: 80vh; 
-    background-color: #f8f9fa;
+    background-color: var(--background-colour);
     text-align: center;
     padding: 20px;
   }
@@ -13,7 +13,7 @@
   .not-found-header {
     font-size: 48px;
     font-weight: bold;
-    color: #e31a1a;
+    color: var(--error-colour);
     margin-bottom: -10px;
   }
   
@@ -26,14 +26,15 @@
   .not-found-button {
     padding: 10px 20px;
     font-size: 16px;
-    color: white;
-    background-color: #1e3a8a; 
+    color: var(--text-colour);
+    background-color: var(--accent-colour); 
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 24px;
   }
   
   .not-found-button:hover {
-    background-color: #14274a; 
+    background-color: var(--accent-colour-dark); 
   }
   
