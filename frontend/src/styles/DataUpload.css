@@ -1,8 +1,8 @@
 .data-upload-container {
     position: relative; 
     width: 90%;      
-    height: 150px;
-    max-width: 600px;
+    height: 175px;
+    max-width: 30vw;
     margin-top: 20px;
     padding: 20px;   /* Padding inside the widget */
     background-color: var(--primary-colour); /* Light gray background */
@@ -23,9 +23,14 @@
 }
 
 .status-message {
-    margin: -10px 0 5px 0; /* Adjusted margins to control spacing */
-    color: red; /* Or any color that suits your theme */
+    margin: -0px 0 0 0; /* Adjusted margins to control spacing */
+    color: var(--error-colour); /* Or any color that suits your theme */
     font-weight: bold;
+    background-color: var(--tertiary-colour);
+    width: 100%;
+    padding: 2px;
+    font-size: 18px;
+    border-radius: 5px;
 }
 
 .button-row {
@@ -49,8 +54,12 @@
 }
 
 .upload-button {
-  background-color: #6e2303;
-  color: white;
+  background-color: var(--accent-colour);
+  color: var(--text-colour);
+}
+
+.upload-button:hover {
+    background-color: var(--accent-colour-dark);
 }
 
 .upload-button:disabled {
@@ -59,16 +68,16 @@
 }
 
 .toggle-log-button {
-  background-color: #0e9d3b;
-  color: white;
+  background-color: var(--tertiary-colour);
+  color: var(--text-colour);
 }
 
 .toggle-log-button:hover {
-  background-color: #c2e222;
+    background-color: var(--tertiary-colour-dark);
 }
 
 .log-terminal {
-    background-color: #00ab83;
+    background-color: var(--tertiary-colour);
     color: rgb(20, 4, 11);
     padding: 10px;
     height: 100px;
@@ -76,7 +85,7 @@
     overflow-x: auto;
     font-family: monospace;
     white-space: nowrap;
-    margin-top: 25px;
+    margin-top: 15px;
     transition: opacity 300ms ease-in-out;
 }
 
@@ -91,8 +100,8 @@
 }
 
 .spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    border-top: 4px solid #4a90e2;
+    border: 4px solid var(--accent-colour); 
+    border-top: 4px solid rgba(0, 0, 0, 0.1);
     border-radius: 50%;
     width: 24px;
     height: 24px;
@@ -114,7 +123,8 @@
 .file-input {
     padding: 5px;
     cursor: pointer;
-    background-color: #c2e222;
+    background-color: var(--tertiary-colour);
+    border-radius: 4px;
     font-size: 16px;
 }
 
