@@ -97,32 +97,42 @@ function DataUpload({ fetchFiles, userId }) {
 
     return (
         <div className={`data-upload-container ${isLogVisible ? 'expanded' : ''}`}>
+            {/* Spinner positioned absolutely in the top-right corner */}
+            {isProcessing && <div className="spinner-container"><div className="spinner"></div></div>}
+            
+            {/* Move header closer to the top */}
             <h2>Upload Data</h2>
 
-            {/* Status Message */}
+            {/* File input row */}
+            <div className="file-input-container">
+                <label className="file-input-label" htmlFor="file-input"></label>
+                <input 
+                    type="file" 
+                    id="file-input" 
+                    onChange={handleFileChange} 
+                    className="file-input"
+                />
+            </div>
+
+            {/* Status message */}
             {message && <p className="status-message">{message}</p>}
 
             {/* Row of buttons */}
             <div className="button-row">
-                <input type="file" onChange={handleFileChange} className="file-input" />
-
                 <button 
-                onClick={handleFileUpload} 
-                disabled={isProcessing} 
-                className="upload-button"
+                    onClick={handleFileUpload} 
+                    disabled={isProcessing} 
+                    className="upload-button"
                 >
-                {isProcessing ? "Processing..." : "Upload Data"}
+                    {isProcessing ? "Processing..." : "Upload Data"}
                 </button>
 
                 <button 
-                onClick={toggleLogVisibility} 
-                className="toggle-log-button"
+                    onClick={toggleLogVisibility} 
+                    className="toggle-log-button"
                 >
-                {isLogVisible ? "Collapse Log" : "Expand Log"}
+                    {isLogVisible ? "Collapse Log" : "Expand Log"}
                 </button>
-
-                {/* Spinner for loading */}
-                {isProcessing && <div className="spinner"></div>}
             </div>
 
             {/* Log Terminal with Transition */}
@@ -132,29 +142,19 @@ function DataUpload({ fetchFiles, userId }) {
                 classNames="slide-height"
                 unmountOnExit
                 nodeRef={logTerminalRef}
-                onEnter={() => {
-                logTerminalRef.current.style.height = '0px';
-                }}
-                onEntering={() => {
-                logTerminalRef.current.style.height = '100px';
-                }}
-                onEntered={() => {
-                logTerminalRef.current.style.height = '100px';
-                }}
-                onExit={() => {
-                logTerminalRef.current.style.height = '100px';
-                }}
-                onExiting={() => {
-                logTerminalRef.current.style.height = '0px';
-                }}
+                onEnter={() => { logTerminalRef.current.style.height = '0px'; }}
+                onEntering={() => { logTerminalRef.current.style.height = '100px'; }}
+                onEntered={() => { logTerminalRef.current.style.height = '100px'; }}
+                onExit={() => { logTerminalRef.current.style.height = '100px'; }}
+                onExiting={() => { logTerminalRef.current.style.height = '0px'; }}
             >
-                  <div 
+                <div 
                     className={`log-terminal ${isLogVisible ? 'visible' : ''}`}
                     ref={logTerminalRef}
-                  >
-                {logs.map((log, index) => (
-                    <p key={index} style={{ margin: 3 }}>{log}</p>
-                ))}
+                >
+                    {logs.map((log, index) => (
+                        <p key={index} style={{ margin: 3 }}>{log}</p>
+                    ))}
                 </div>
             </CSSTransition>
         </div>

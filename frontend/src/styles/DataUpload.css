@@ -1,7 +1,7 @@
 .data-upload-container {
-    position: relative; /* Sticks to the top-left corner */
-    width: 90%;      /* 1/3 of the screen width */
-    height: 125px;
+    position: relative; 
+    width: 90%;      
+    height: 150px;
     max-width: 600px;
     margin-top: 20px;
     padding: 20px;   /* Padding inside the widget */
@@ -13,25 +13,26 @@
 }
 
 .data-upload-container.expanded {
-    height: 275px; /* Adjusts height when expanded */
+    height: 300px; /* Adjusts height when expanded */
   }
 
 .data-upload-container h2 {
     margin: 0;
     margin-bottom: 5px; /* Add a small margin-bottom for spacing */
+    font-size: 30px;
 }
 
 .status-message {
-    margin: 5px 0 10px 0; /* Adjusted margins to control spacing */
+    margin: -10px 0 5px 0; /* Adjusted margins to control spacing */
     color: red; /* Or any color that suits your theme */
     font-weight: bold;
 }
 
 .button-row {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
-    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .file-input {
@@ -44,6 +45,7 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
 }
 
 .upload-button {
@@ -82,6 +84,12 @@
     font-size: 12px;
 }
 
+.spinner-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
 .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
     border-top: 4px solid #4a90e2;
@@ -95,6 +103,19 @@
     to {
       transform: rotate(360deg);
     }
+}
+
+.file-input-container {
+    display: flex;
+    align-items: center;
+    width: 60%;
+}
+
+.file-input {
+    padding: 5px;
+    cursor: pointer;
+    background-color: #c2e222;
+    font-size: 16px;
 }
 
 .slide-height-enter {
