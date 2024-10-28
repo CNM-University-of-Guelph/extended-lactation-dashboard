@@ -39,7 +39,7 @@ function DataControl({
 
   return (
     <div className="data-control-container">
-      <h2>Select Data Type</h2>
+      <h2>Select Data To Display</h2>
       <select
         onChange={(e) => setDataType(e.target.value)}
         value={dataType}

@@ -1,23 +1,27 @@
 .data-control-container {
     position: relative;
-    /* left: 20px; */
     width: 90%;
     max-width: 600px;
     padding: 20px;
     background-color: var(--primary-colour);
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    /* z-index: 100; */
 }
   
-.data-type-select,
-.file-select,
-.filter-input,
-select,
-input {
+.data-control-container h2 {
+  margin: 0;
+  margin-bottom: 5px; /* Add a small margin-bottom for spacing */
+  font-size: 30px;
+}
+
+.file-select, .data-type-select {
+  width: 95%;
+}
+
+.filter-input, select, input {
     margin-bottom: 20px;
     padding: 10px;
-    width: 100%;
+    width: 90%;
 }
   
 .filters-container {
