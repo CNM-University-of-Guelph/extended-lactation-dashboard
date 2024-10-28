@@ -3,7 +3,7 @@
     top: 80px;
     left: 0;
     z-index: 1000;
-    background-color: #f5f5f5;
+    background-color: var(--secondary-colour);
     padding: 20px 20px 20px 45px;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
@@ -24,7 +24,7 @@
 .filter-container label {
     display: block;              /* Labels on their own lines */
     font-weight: bold;
-    color: #333;                 /* Dark gray text */
+    color: var(--text-colour);                 /* Dark gray text */
     margin-bottom: 5px;          /* Small space between label and input */
 }
 
@@ -48,24 +48,11 @@
     color: #a8a6a6;              /* Placeholder text color */
 }
 
-.filter-container .filter-button {
-    background-color: #1E3A8A;   /* Dark blue button */
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.filter-container .filter-button:hover {
-    background-color: #14274A;   /* Darker blue on hover */
-}
-
 /* Style for the collapse button */
 .collapse-button {
-    background-color: #1E3A8A;
-    color: white;
+    background-color: var(--tertiary-colour);
+    font-size: 16px;
+    color: var(--text-colour);
     padding: 10px;
     border: none;
     border-radius: 5px;
@@ -74,7 +61,7 @@
 }
 
 .collapse-button:hover {
-    background-color: #14274A; /* Darker blue on hover */
+    background-color: var(--tertiary-colour-dark); /* Darker blue on hover */
 }
 
 /* Tab for bringing back the filter */
@@ -82,8 +69,8 @@
     position: fixed;
     top: 165px; /* Adjust this to fit your layout */
     left: 0; /* Stick to the left side of the screen */
-    background-color: #1E3A8A; /* Tab color */
-    color: white;
+    background-color: var(--secondary-colour); /* Tab color */
+    color: var(--text-colour);
     width: 40px; /* Control the width of the tab */
     height: 80px; /* Control the height of the tab */
     border-top-right-radius: 40px; /* Semicircle shape */
@@ -98,8 +85,9 @@
 }
 
 .expand-all-button {
-    background-color: #1E3A8A;
-    color: white;
+    background-color: var(--accent-colour);
+    color: var(--text-colour);
+    font-size: 16px;
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
@@ -108,5 +96,5 @@
 }
 
 .expand-all-button:hover {
-    background-color: #14274A;
+    background-color: var(--accent-colour-dark);
 }
