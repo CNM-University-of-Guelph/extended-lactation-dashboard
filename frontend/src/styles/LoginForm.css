@@ -3,34 +3,58 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 50px auto;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-  }
-  
-  .login-form-input {
+    margin: 0 auto;
     width: 90%;
+    max-width: 600px;
+    padding: 20px;
+    border-radius:16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--primary-colour);
+}
+  
+.login-form-input {
+    width: 80%;
     padding: 10px;
     margin: 10px 0;
-    border: 1px solid #ccc;
+    border: 1px solid var(--tertiary-colour);
     border-radius: 4px;
     box-sizing: border-box;
-  }
+}
   
-  .login-form-button {
-    width: 95%;
-    padding: 10px;
+.login-form-button {
+    width: 40%;
+    padding: 15px;
     margin: 20px 0;
-    background-color: #e31a1a;
-    color: white;
+    background-color: var(--accent-colour);
+    color: var(--text-colour);
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
-  }
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 18px;
+}
   
-  .login-form-button:hover {
-    background-color: #0056b3;
-  }
+.login-form-button:hover {
+    background-color: var(--accent-colour-dark);
+}
+
+.register-link {
+  color: var(--tertiary-colour); /* Use the accent color for link */
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+
+.register-link:hover {
+  color: var(--tertiary-colour-dark); /* Darker accent color on hover */
+}
+
+h1 {
+  color: var(--text-colour);
+  font-size: 36px;
+}
+
+p {
+  font-size: 20px;
+}

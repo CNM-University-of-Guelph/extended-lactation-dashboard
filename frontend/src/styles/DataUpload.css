@@ -1,42 +1,151 @@
 .data-upload-container {
-    position: fixed; /* Sticks to the top-left corner */
-    top: 90px;       /* Offset from the top */
-    left: 20px;      /* Offset from the left */
-    width: 33%;      /* 1/3 of the screen width */
+    position: relative; 
+    width: 90%;      
+    height: 175px;
+    max-width: 30vw;
+    margin-top: 20px;
     padding: 20px;   /* Padding inside the widget */
-    background-color: #a8a6a6; /* Light gray background */
+    background-color: var(--primary-colour); /* Light gray background */
     border-radius: 8px;  /* Rounded corners */
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  /* Optional: Add a slight shadow */
-    z-index: 100;    /* Ensures it sits above other content */
+    overflow: hidden;
+    transition: height 300ms ease-in-out;
+}
+
+.data-upload-container.expanded {
+    height: 300px; /* Adjusts height when expanded */
+  }
+
+.data-upload-container h2 {
+    margin: 0;
+    margin-bottom: 5px; /* Add a small margin-bottom for spacing */
+    font-size: 30px;
 }
 
 .status-message {
+    margin: -0px 0 0 0; /* Adjusted margins to control spacing */
+    color: var(--error-colour); /* Or any color that suits your theme */
+    font-weight: bold;
+    background-color: var(--tertiary-colour);
+    width: 100%;
+    padding: 2px;
+    font-size: 18px;
+    border-radius: 5px;
+}
+
+.button-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
     margin-top: 10px;
-    color: red;  /* Use red for error messages */
+}
+
+.file-input {
+    flex: 1;
+}
+
+.upload-button,
+.toggle-log-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .upload-button {
-    margin-top: 10px;
-    background-color: #e31a1a; /* Red for logout */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: var(--accent-colour);
+  color: var(--text-colour);
 }
 
 .upload-button:hover {
-    background-color: #b32424; /* Darker red on hover */
-    cursor: not-allowed;
+    background-color: var(--accent-colour-dark);
+}
+
+.upload-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.toggle-log-button {
+  background-color: var(--tertiary-colour);
+  color: var(--text-colour);
+}
+
+.toggle-log-button:hover {
+    background-color: var(--tertiary-colour-dark);
 }
 
 .log-terminal {
-    background-color: #00ab83;
+    background-color: var(--tertiary-colour);
     color: rgb(20, 4, 11);
     padding: 10px;
-    height: 200px;
-    overflow-y: scroll;
-    overflow-x: scroll;
+    height: 100px;
+    overflow-y: auto;
+    overflow-x: auto;
     font-family: monospace;
     white-space: nowrap;
+    margin-top: 15px;
+    transition: opacity 300ms ease-in-out;
+}
+
+.log-terminal p {
+    font-size: 12px;
+}
+
+.spinner-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.spinner {
+    border: 4px solid var(--accent-colour); 
+    border-top: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+  }
+  
+@keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+}
+
+.file-input-container {
+    display: flex;
+    align-items: center;
+    width: 60%;
+}
+
+.file-input {
+    padding: 5px;
+    cursor: pointer;
+    background-color: var(--tertiary-colour);
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.slide-height-enter {
+    height: 0;
+    opacity: 0;
+}
+  
+.slide-height-enter-active {
+    height: 100px;
+    opacity: 1;
+    transition: height 300ms ease-in-out, opacity 300ms ease-in-out;
+}
+  
+.slide-height-exit {
+    height: 100px;
+    opacity: 1;
+}
+  
+.slide-height-exit-active {
+    height: 0;
+    opacity: 0;
+    transition: height 300ms ease-in-out, opacity 300ms ease-in-out;
 }

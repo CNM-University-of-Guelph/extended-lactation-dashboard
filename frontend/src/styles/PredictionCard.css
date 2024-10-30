@@ -1,10 +1,9 @@
 .prediction-card {
-    background-color: #18abd0;
+    background-color: var(--primary-colour);
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin: 10px 0;
-    width: 95%;
     max-height: 250px; /* Collapsed height */
     overflow: hidden;
     transition: max-height 0.5s ease-in-out; /* Smooth height transition */
@@ -28,14 +27,13 @@
 
 .left-section .cow-info h2 {
     margin: 0;
-    margin-top: -20px;
-    color: #333;
+    color: var(--text-colour);
     font-size: 2em; /* Larger font for Cow ID */
 }
   
 .left-section .cow-info h3 {
     margin: 0;
-    color: #555;
+    color: var(--text-colour);
     font-size: 1.5em; /* Slightly smaller font for Parity */
 }
 
@@ -47,50 +45,51 @@
     align-items: center;
 }
   
-  .center-section > div {
+.center-section > div {
     text-align: center;
 }
 
-  .center-section .label {
+.center-section .label {
     font-size: 1em;
-    color: #333;
-    /* margin: 0; */
+    color: var(--text-colour);
 }
 
+
 .center-section .predicted-value-section h3 {
-    font-size: 1.25em;
+    font-size: 1.5em;
+    margin: 0 0 0 0 ;
 }
 
 .center-section .days-to-target-section h3 {
-    font-size: 1.25em;
+    font-size: 1.5em;
+    margin: 0 0 0 0 ;
 }
 
-  .center-section .value {
+.center-section .value {
     font-size: 1.5em;
     font-weight: bold;
-    color: #000000;
-    /* margin: 0; */
+    color: var(--text-colour);
 }
 
-  .treatment-group-section {
+.treatment-group-section {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
   
-  .treatment-group-section label {
+.treatment-group-section label {
     font-weight: bold;
-    color: #333;
+    color: var(--text-colour);
     margin-bottom: 5px;
     font-size: 1.25em;
 }
   
-  .treatment-group-section select {
+.treatment-group-section select {
     padding: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 1em;
-    background-color: #f9f9f9;
+    background-color: var(--background-colour);
 }
 
 /* Right Section: Expand/Collapse Button */
@@ -99,8 +98,8 @@
 }
   
 .expand-button {
-    background-color: #1E3A8A;
-    color: white;
+    background-color: var(--accent-colour);
+    color: var(--text-colour);
     border: none;
     border-radius: 5px;
     padding: 10px 15px; /* Increased padding for larger button */
@@ -110,7 +109,7 @@
 }
   
 .expand-button:hover {
-    background-color: #14274A;
+    background-color: var(--accent-colour-dark);
 }
 
 /* Expanded content section */
@@ -131,7 +130,7 @@
   
   /* Plot and Table Containers */
 .plot-container {
-    flex: 2; /* 2/3 of the width */
+    flex: 1; /* 2/3 of the width */
     margin-right: 20px;
     display: flex;
     align-items: flex-start;
@@ -157,17 +156,17 @@ table {
   
 table th,
 table td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--tertiary-colour);
     padding: 8px;
     text-align: center;
 }
   
 table th {
-    background-color: #1E3A8A;
-    color: white;
+    background-color: var(--secondary-colour);
+    color: var(--text-colour);
 }
   
 table td {
-    background-color: #f9f9f9;
-    color: #333;
+    background-color: var(--background-colour);
+    color: var(--text-colour);
 }

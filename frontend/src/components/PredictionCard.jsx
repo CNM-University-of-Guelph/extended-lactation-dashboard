@@ -22,19 +22,6 @@ function PredictionCard({
     const [isExpanded, setIsExpanded] = useState(false);
     const [selectedTreatmentGroup, setSelectedTreatmentGroup] = useState(treatmentGroup);
 
-    // Debug: Log the incoming props
-    // console.log("PredictionCard props:", {
-    //     cowId,
-    //     parity,
-    //     predictedValue,
-    //     plotPath,
-    //     extend1Cycle,
-    //     extend2Cycle,
-    //     extend3Cycle,
-    //     daysToTarget,
-    //     fullPlotPath
-    // });
-
     // Update local isExpanded when isExpandedAll changes from the parent
     useEffect(() => {
         setIsExpanded(isExpandedAll);

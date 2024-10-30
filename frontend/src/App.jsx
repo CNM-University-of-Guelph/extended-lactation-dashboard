@@ -9,6 +9,7 @@ import Predictions from "./pages/Predictions"
 import Help from "./pages/Help"
 import ProtectedRoute from "./components/ProtectedRoute"
 import { UserProvider } from "./UserContext.jsx";
+import "./styles/global.css"
 
 function Logout() {
   const { setUser } = useContext(UserContext);
