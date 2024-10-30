@@ -125,3 +125,11 @@ class Prediction(models.Model):
     def __str__(self):
         return f"Prediction for {self.lactation.cow.cow_id} - Parity {self.lactation.parity}"
     
+
+class DatabaseExport(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Database Export for {self.user.username} on {self.created_at}"
+    
