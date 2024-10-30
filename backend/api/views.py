@@ -607,7 +607,7 @@ class GetUserFileView(APIView):
 class PredictionsListView(APIView):
     def get(self, request):
         logging.info("Predictions API called")
-        predictions = Prediction.objects.all().select_related("lactation__cow")
+        predictions = Prediction.objects.filter(lactation__cow__owner=request.user).select_related("lactation__cow")
 
         if not predictions.exists():
             logging.info("No predictions found")
@@ -632,7 +632,7 @@ class PredictionsListView(APIView):
 
 class TreatmentListView(APIView):
     def get(self, request):
-        lactations = Lactation.objects.all().select_related('cow')
+        lactations = Lactation.objects.filter(cow__owner=request.user).select_related('cow')
         data = [
             {
                 "cow_id": lactation.cow.cow_id,
