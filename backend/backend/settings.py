@@ -13,6 +13,10 @@ from datetime import timedelta
 import os
 
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file in development
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,12 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-zn2ff1cb_ih9+(y658)!ax@b2^4$xo0i2vu6qb)t17hjcv)=bp'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True    # TODO Change for production
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ["*"]   # TODO Specify host before deploying
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -97,8 +101,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': os.getenv('DB_NAME', BASE_DIR / 'db.sqlite3'),
+        'USER': os.getenv('DB_USER', ''),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', ''),
     }
 }
 
@@ -146,8 +154,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True  # TODO Specify before deploying  
-CORS_ALLOWS_CREDENTIALS = True # TODO Specify before deploying
+CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
+CORS_ALLOWS_CREDENTIALS = os.getenv('CORS_ALLOWS_CREDENTIALS', 'False') == 'True'
 
 MEDIA_URL = "/media/"   # URL where media files can be accessed
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
@@ -156,6 +164,6 @@ ASGI_APPLICATION = "backend.asgi.application"
 
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Use Redis in production
+        'BACKEND': os.getenv('CHANNEL_LAYERS_BACKEND', 'channels.layers.InMemoryChannelLayer'),
     },
 }
