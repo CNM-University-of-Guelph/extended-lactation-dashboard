@@ -69,14 +69,8 @@ RUN mkdir -p media staticfiles
 COPY --from=frontend-build /frontend/dist /var/www/html
 COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Create startup script
-RUN echo '#!/bin/bash\n\
-nginx\n\
-python manage.py runserver 0.0.0.0:8000\n\
-' > /start.sh && chmod +x /start.sh
-
 # Expose ports
 EXPOSE 3000 8000
 
 # Start both nginx and Django
-CMD ["/start.sh"] 
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "backend.asgi:application"] 
