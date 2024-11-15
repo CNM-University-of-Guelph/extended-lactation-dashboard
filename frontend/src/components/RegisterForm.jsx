@@ -50,13 +50,18 @@ function RegisterForm({ route, method }) {
             return;
         }
 
+        const userData = { 
+            username, 
+            email, 
+            password,
+            confirmPassword  
+        };
+
+        console.log('Sending registration data:', userData);
+
         try {
-            const res = await api.post(route, { 
-                username, 
-                email, 
-                password,
-                confirmPassword
-            });
+            const res = await api.post(route, userData);
+            console.log('Registration response:', res.data);
             navigate("/login")
 
         } catch (error) {
