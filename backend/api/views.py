@@ -41,24 +41,6 @@ class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny] # Anyone can register
 
-    def create(self, request, *args, **kwargs):
-        logger.info(f"Registration attempt with data: {request.data}")
-        
-        serializer = self.get_serializer(data=request.data)
-        if not serializer.is_valid():
-            logger.error(f"Registration validation failed: {serializer.errors}")
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
-        try:
-            self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        except Exception as e:
-            logger.error(f"Registration failed: {str(e)}")
-            return Response(
-                {'error': 'Registration failed. Please try again.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
 
 class CurrentUserView(generics.RetrieveAPIView):
     serializer_class = CurrentUserSerializer
