@@ -33,14 +33,14 @@ ENV CORS_ALLOWS_CREDENTIALS=${CORS_ALLOWS_CREDENTIALS}
 ENV CHANNEL_LAYERS_BACKEND=${CHANNEL_LAYERS_BACKEND}
 
 # Install dependencies
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copy the rest of the application
-COPY . .
+COPY backend/ .
 
 # Make sure migrations and static files are handled
 RUN python manage.py collectstatic --noinput
 
 # Railway will provide the PORT environment variable
-CMD gunicorn backend.wsgi:application --bind 0.0.0.0:$PORT 
+CMD gunicorn backend/backend.wsgi:application --bind 0.0.0.0:$PORT 
