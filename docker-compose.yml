@@ -20,6 +20,8 @@ services:
   frontend:
     build:
       dockerfile: frontend/Dockerfile
+      args:
+        - RAILWAY_ENVIRONMENT=
     ports:
       - "3000:3000"
     environment:

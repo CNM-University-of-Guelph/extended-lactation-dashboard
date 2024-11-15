@@ -19,8 +19,9 @@ FROM nginx:alpine
 # Copy the built files from build stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy nginx configuration
-COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
+# Copy appropriate nginx configuration based on environment
+ARG RAILWAY_ENVIRONMENT
+COPY frontend/nginx${RAILWAY_ENVIRONMENT:+.conf}${RAILWAY_ENVIRONMENT:-'.dev.conf'} /etc/nginx/conf.d/default.conf
 
 EXPOSE 3000
 
