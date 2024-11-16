@@ -45,4 +45,9 @@ COPY backend/ .
 RUN python manage.py collectstatic --noinput
 
 # Railway will provide the PORT environment variable
-CMD gunicorn backend.wsgi:application --bind 0.0.0.0:$PORT 
+CMD gunicorn backend.wsgi:application \
+    --bind 0.0.0.0:$PORT \
+    --timeout 300 \
+    --workers 3 \
+    --threads 3 \
+    --worker-class gthread 
