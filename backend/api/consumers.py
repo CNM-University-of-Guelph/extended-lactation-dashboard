@@ -1,41 +1,31 @@
-from channels.generic.websocket import AsyncWebsocketConsumer
-import json
+from channels.generic.websocket import JsonWebsocketConsumer
+from asgiref.sync import async_to_sync
 
-class DataUploadConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        self.user_id = self.scope['url_route']['kwargs']['user_id']
-        self.group_name = f'user_{self.user_id}'
-
-        # Join group
-        await self.channel_layer.group_add(
+class ProgressConsumer(JsonWebsocketConsumer):
+    def connect(self):
+        # Get user ID from scope
+        user = self.scope["user"]
+        if not user.is_authenticated:
+            self.close()
+            return
+            
+        # Add to user-specific group
+        self.group_name = f"user_{user.id}_progress"
+        async_to_sync(self.channel_layer.group_add)(
             self.group_name,
             self.channel_name
         )
+        self.accept()
 
-        await self.accept()
+    def disconnect(self, close_code):
+        # Remove from group
+        if hasattr(self, 'group_name'):
+            async_to_sync(self.channel_layer.group_discard)(
+                self.group_name,
+                self.channel_name
+            )
 
-    async def disconnect(self, close_code):
-        # Leave group
-        await self.channel_layer.group_discard(
-            self.group_name,
-            self.channel_name
-        )
-
-    async def receive(self, text_data):
-        # Handle messages received from the frontend
-        text_data_json = json.loads(text_data)
-        message = text_data_json.get('message', '')
-
-        # For demonstration, send a message back
-        await self.send(text_data=json.dumps({
-            'message': f"Received: {message}"
-        }))
-
-    # Receive message from group
-    async def data_processing_message(self, event):
-        message = event['message']
-
+    # This must match the "type" in send_progress_message
+    def progress_message(self, event):
         # Send message to WebSocket
-        await self.send(text_data=json.dumps({
-            'message': message
-        }))
+        self.send_json(event["message"])

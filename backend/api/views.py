@@ -111,78 +111,99 @@ class DataUploadView(APIView):
     permission_classes = [IsAuthenticated]  # Ensure user is authenticated
 
     def send_progress_message(self, user_id, message):
-        channel_layer = get_channel_layer()
-        group_name = f'user_{user_id}'
-        async_to_sync(channel_layer.group_send)(
-            group_name,
-            {
-                'type': 'data_processing_message',
-                'message': message
-            }
-        )
-
-    def post(self, request, *args, **kwargs):
-        file_obj = request.FILES.get("file")
-        if not file_obj:
-            return Response({"message": "No file provided."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        user_folder = os.path.join(settings.MEDIA_ROOT, f"uploads/user_{request.user.id}")
-        file_path = os.path.join(user_folder, file_obj.name)
-
-        if os.path.exists(file_path):
-            return Response({
-                "message": "File already exists. Please rename the file."
-            }, status=status.HTTP_409_CONFLICT)  
-
-        # Save and load uploaded file
         try:
-            uploaded_file = UploadFile(user=request.user, file=file_obj)
-            uploaded_file.save()
-            file_path = uploaded_file.file.path
-            data = pd.read_csv(file_path)
-
+            channel_layer = get_channel_layer()
+            # Create a unique group name for this user
+            group_name = f"user_{user_id}_progress"
+            
+            # Send the message
+            async_to_sync(channel_layer.group_send)(
+                group_name,
+                {
+                    "type": "progress.message",  # This must match a method name in your consumer
+                    "message": {
+                        "progress": message
+                    }
+                }
+            )
         except Exception as e:
-            self.send_progress_message(request.user.id, f"Error loading file: {str(e)}")
-            return Response(
-                {"message": f"Error processing file: {str(e)}"}, 
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            print(f"Error sending progress message: {str(e)}")
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            # Send initial progress
+            self.send_progress_message(request.user.id, "Starting upload...")
+            
+            file_obj = request.FILES.get("file")
+            if not file_obj:
+                return Response({"message": "No file provided."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            user_folder = os.path.join(settings.MEDIA_ROOT, f"uploads/user_{request.user.id}")
+            file_path = os.path.join(user_folder, file_obj.name)
+
+            if os.path.exists(file_path):
+                return Response({
+                    "message": "File already exists. Please rename the file."
+                }, status=status.HTTP_409_CONFLICT)  
+
+            # Save and load uploaded file
+            try:
+                uploaded_file = UploadFile(user=request.user, file=file_obj)
+                uploaded_file.save()
+                file_path = uploaded_file.file.path
+                data = pd.read_csv(file_path)
+
+            except Exception as e:
+                self.send_progress_message(request.user.id, f"Error loading file: {str(e)}")
+                return Response(
+                    {"message": f"Error processing file: {str(e)}"}, 
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                    )
+
+            # Process uploaded file
+            try:
+                self.send_progress_message(request.user.id, "Validating data...")
+                validated_data, eligible_lactations, validation_messages = validate(data)
+                for msg in validation_messages:
+                    self.send_progress_message(request.user.id, msg)
+
+                self.send_progress_message(request.user.id, "Cleaning data...")
+                cleaned_data, cleaning_messages = clean(validated_data)
+                for msg in cleaning_messages:
+                    self.send_progress_message(request.user.id, msg)
+
+                self.send_progress_message(request.user.id, "Storing lactation data...")
+                self.store_lactation_data(
+                    cleaned_data, eligible_lactations, request.user
                 )
 
-        # Process uploaded file
-        try:
-            self.send_progress_message(request.user.id, "Validating data...")
-            validated_data, eligible_lactations, validation_messages = validate(data)
-            for msg in validation_messages:
-                self.send_progress_message(request.user.id, msg)
+                self.send_progress_message(request.user.id, "Creating input features...")
+                self.create_input_features(
+                    eligible_lactations, cleaned_data, request.user
+                )
 
-            self.send_progress_message(request.user.id, "Cleaning data...")
-            cleaned_data, cleaning_messages = clean(validated_data)
-            for msg in cleaning_messages:
-                self.send_progress_message(request.user.id, msg)
+                self.send_progress_message(request.user.id, "Making predictions...")
+                self.make_prediction(eligible_lactations, request)
 
-            self.send_progress_message(request.user.id, "Storing lactation data...")
-            self.store_lactation_data(
-                cleaned_data, eligible_lactations, request.user
+                self.send_progress_message(request.user.id, "Processing complete!")
+
+            except ValueError as e:
+                error_traceback = traceback.format_exc() 
+                self.send_progress_message(request.user.id, f"Error: {str(e)}\n{error_traceback}")
+                return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            # Send completion message
+            self.send_progress_message(request.user.id, "Upload complete!")
+            
+            return Response({
+                "message": "File processed and data stored successfully! Predictions have been made!",
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, 
+                status=status.HTTP_400_BAD_REQUEST
             )
-
-            self.send_progress_message(request.user.id, "Creating input features...")
-            self.create_input_features(
-                eligible_lactations, cleaned_data, request.user
-            )
-
-            self.send_progress_message(request.user.id, "Making predictions...")
-            self.make_prediction(eligible_lactations, request)
-
-            self.send_progress_message(request.user.id, "Processing complete!")
-
-        except ValueError as e:
-            error_traceback = traceback.format_exc() 
-            self.send_progress_message(request.user.id, f"Error: {str(e)}\n{error_traceback}")
-            return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response({
-            "message": "File processed and data stored successfully! Predictions have been made!",
-        }, status=status.HTTP_200_OK)
     
     def store_lactation_data(
         self, 
