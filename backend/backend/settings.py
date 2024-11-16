@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from datetime import timedelta
 import os
+from urllib.parse import urlparse
 
 from pathlib import Path
 from dotenv import load_dotenv
@@ -184,8 +185,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 ASGI_APPLICATION = "backend.asgi.application"
 
+# Get Redis URL from environment
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
+
+# Parse the URL to get components
+redis_url = urlparse(REDIS_URL)
+
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': os.getenv('CHANNEL_LAYERS_BACKEND', 'channels.layers.InMemoryChannelLayer'),
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(redis_url.hostname, redis_url.port)]
+        },
     },
 }
