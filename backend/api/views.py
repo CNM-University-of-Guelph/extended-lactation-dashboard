@@ -130,78 +130,109 @@ class DataUploadView(APIView):
     #         print(f"Error sending progress message: {str(e)}")
     
     def post(self, request, *args, **kwargs):
+        logger.info("=== Starting File Upload ===")
+        logger.info(f"User: {request.user.id}")
+        logger.info(f"Files in request: {request.FILES}")
+        logger.info(f"POST data: {request.POST}")
+        
         try:
             # Send initial progress
             # self.send_progress_message(request.user.id, "Starting upload...")
             
             file_obj = request.FILES.get("file")
             if not file_obj:
+                logger.error("No file provided in request")
                 return Response({"message": "No file provided."}, status=status.HTTP_400_BAD_REQUEST)
             
+            logger.info(f"File received: {file_obj.name} (size: {file_obj.size} bytes)")
+            
+            # Check user folder
             user_folder = os.path.join(settings.MEDIA_ROOT, f"uploads/user_{request.user.id}")
             file_path = os.path.join(user_folder, file_obj.name)
+            logger.info(f"Target path: {file_path}")
 
             if os.path.exists(file_path):
+                logger.warning(f"File already exists: {file_path}")
                 return Response({
                     "message": "File already exists. Please rename the file."
                 }, status=status.HTTP_409_CONFLICT)  
 
             # Save and load uploaded file
             try:
+                logger.info("Saving uploaded file...")
                 uploaded_file = UploadFile(user=request.user, file=file_obj)
                 uploaded_file.save()
                 file_path = uploaded_file.file.path
+                logger.info(f"File saved to: {file_path}")
+                
+                logger.info("Reading CSV file...")
                 data = pd.read_csv(file_path)
+                logger.info(f"CSV loaded successfully. Shape: {data.shape}")
 
             except Exception as e:
                 # self.send_progress_message(request.user.id, f"Error loading file: {str(e)}")
+                logger.error(f"Error processing uploaded file: {str(e)}")
+                logger.error(traceback.format_exc())
                 return Response(
                     {"message": f"Error processing file: {str(e)}"}, 
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                    )
+                )
 
             # Process uploaded file
             try:
                 # self.send_progress_message(request.user.id, "Validating data...")
+                logger.info("Starting data validation...")
+
                 validated_data, eligible_lactations, validation_messages = validate(data)
                 # for msg in validation_messages:
                 #     self.send_progress_message(request.user.id, msg)
+                logger.info(f"Validation complete. Messages: {validation_messages}")
 
                 # self.send_progress_message(request.user.id, "Cleaning data...")
+                logger.info("Starting data cleaning...")
+
                 cleaned_data, cleaning_messages = clean(validated_data)
                 # for msg in cleaning_messages:
                 #     self.send_progress_message(request.user.id, msg)
 
                 # self.send_progress_message(request.user.id, "Storing lactation data...")
+                logger.info("Storing lactation data...")
                 self.store_lactation_data(
                     cleaned_data, eligible_lactations, request.user
                 )
 
                 # self.send_progress_message(request.user.id, "Creating input features...")
+                logger.info("Creating input features...")
                 self.create_input_features(
                     eligible_lactations, cleaned_data, request.user
                 )
 
                 # self.send_progress_message(request.user.id, "Making predictions...")
+                logger.info("Making predictions...")
                 self.make_prediction(eligible_lactations, request)
 
                 # self.send_progress_message(request.user.id, "Processing complete!")
 
             except ValueError as e:
-                error_traceback = traceback.format_exc() 
-                # self.send_progress_message(request.user.id, f"Error: {str(e)}\n{error_traceback}")
-                return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            # Send completion message
-            # self.send_progress_message(request.user.id, "Upload complete!")
+                error_traceback = traceback.format_exc()
+                logger.error(f"Error in data processing: {str(e)}")
+                logger.error(error_traceback)
+                return Response(
+                    {"message": f"Error processing file: {str(e)}"}, 
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
             
+            logger.info("=== File Processing Complete ===")
             return Response({
                 "message": "File processed and data stored successfully! Predictions have been made!",
             }, status=status.HTTP_200_OK)
             
         except Exception as e:
+            logger.error("=== Unexpected Error ===")
+            logger.error(str(e))
+            logger.error(traceback.format_exc())
             return Response(
-                {"error": str(e)}, 
+                {"message": f"Unexpected error: {str(e)}"}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
     
