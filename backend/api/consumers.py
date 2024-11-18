@@ -1,24 +1,31 @@
 from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ProgressConsumer(JsonWebsocketConsumer):
     def connect(self):
-        # Get user ID from scope
+        logger.info(f"WebSocket connection attempt from user {self.scope['user']}")
         user = self.scope["user"]
+        
         if not user.is_authenticated:
+            logger.error("Unauthenticated WebSocket connection attempt")
             self.close()
             return
             
-        # Add to user-specific group
         self.group_name = f"user_{user.id}_progress"
+        logger.info(f"Adding user to group: {self.group_name}")
+        
         async_to_sync(self.channel_layer.group_add)(
             self.group_name,
             self.channel_name
         )
         self.accept()
+        logger.info("WebSocket connection accepted")
 
     def disconnect(self, close_code):
-        # Remove from group
+        logger.info(f"WebSocket disconnected with code: {close_code}")
         if hasattr(self, 'group_name'):
             async_to_sync(self.channel_layer.group_discard)(
                 self.group_name,
