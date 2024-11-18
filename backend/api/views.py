@@ -661,7 +661,7 @@ class PredictionsListView(APIView):
     def get(self, request):
         logging.info("Predictions API called")
         predictions = Prediction.objects.filter(lactation__cow__owner=request.user).select_related("lactation__cow")
-        base_url = os.getenv('BACKEND_URL', 'http://localhost:8000')
+        base_url = os.getenv('BACKEND_URL')
         if not predictions.exists():
             logging.info("No predictions found")
 
