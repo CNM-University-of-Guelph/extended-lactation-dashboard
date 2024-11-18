@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import api from "../api";
 import "../styles/DataUpload.css"
 import { CSSTransition } from "react-transition-group";
-import { createWebSocket } from '../utils/websocket';
+// import { createWebSocket } from '../utils/websocket';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -14,75 +14,75 @@ function DataUpload({ fetchFiles, userId }) {
     const [isLogVisible, setIsLogVisible] = useState(false);
     const logTerminalRef = useRef(null);
 
-    useEffect(() => {
-        // Initial setup logging
-        console.log('=== DataUpload WebSocket Setup ===');
-        console.log('Environment:', {
-            VITE_API_URL: import.meta.env.VITE_API_URL,
-            userId: userId
-        });
+    // useEffect(() => {
+    //     // Initial setup logging
+    //     console.log('=== DataUpload WebSocket Setup ===');
+    //     console.log('Environment:', {
+    //         VITE_API_URL: import.meta.env.VITE_API_URL,
+    //         userId: userId
+    //     });
 
-        let socket;
-        try {
-            const wsPath = `/ws/data-upload/${userId}/`;
-            console.log('Creating WebSocket with path:', wsPath);
+    //     let socket;
+    //     try {
+    //         const wsPath = `/ws/data-upload/${userId}/`;
+    //         console.log('Creating WebSocket with path:', wsPath);
             
-            socket = createWebSocket(wsPath);
+    //         socket = createWebSocket(wsPath);
             
-            socket.onopen = (event) => {
-                console.log('=== WebSocket Connected ===');
-                console.log('Connection URL:', socket.url);
-                console.log('ReadyState:', socket.readyState);
-            };
+    //         socket.onopen = (event) => {
+    //             console.log('=== WebSocket Connected ===');
+    //             console.log('Connection URL:', socket.url);
+    //             console.log('ReadyState:', socket.readyState);
+    //         };
             
-            socket.onmessage = (event) => {
-                console.log('=== WebSocket Message Received ===');
-                console.log('Raw data:', event.data);
-                try {
-                    const data = JSON.parse(event.data);
-                    console.log('Parsed data:', data);
-                } catch (error) {
-                    console.error('Failed to parse message:', error);
-                }
-            };
+    //         socket.onmessage = (event) => {
+    //             console.log('=== WebSocket Message Received ===');
+    //             console.log('Raw data:', event.data);
+    //             try {
+    //                 const data = JSON.parse(event.data);
+    //                 console.log('Parsed data:', data);
+    //             } catch (error) {
+    //                 console.error('Failed to parse message:', error);
+    //             }
+    //         };
             
-            socket.onerror = (error) => {
-                console.error('=== WebSocket Error ===');
-                console.error('Error details:', {
-                    error: error,
-                    url: socket.url,
-                    readyState: socket.readyState
-                });
-            };
+    //         socket.onerror = (error) => {
+    //             console.error('=== WebSocket Error ===');
+    //             console.error('Error details:', {
+    //                 error: error,
+    //                 url: socket.url,
+    //                 readyState: socket.readyState
+    //             });
+    //         };
             
-            socket.onclose = (event) => {
-                console.log('=== WebSocket Closed ===');
-                console.log('Close details:', {
-                    code: event.code,
-                    reason: event.reason,
-                    wasClean: event.wasClean
-                });
-            };
+    //         socket.onclose = (event) => {
+    //             console.log('=== WebSocket Closed ===');
+    //             console.log('Close details:', {
+    //                 code: event.code,
+    //                 reason: event.reason,
+    //                 wasClean: event.wasClean
+    //             });
+    //         };
             
-        } catch (error) {
-            console.error('=== WebSocket Creation Failed ===');
-            console.error('Error:', error);
-            console.error('Environment state:', {
-                VITE_API_URL: import.meta.env.VITE_API_URL,
-                userId: userId,
-                protocol: window.location.protocol
-            });
-        }
+    //     } catch (error) {
+    //         console.error('=== WebSocket Creation Failed ===');
+    //         console.error('Error:', error);
+    //         console.error('Environment state:', {
+    //             VITE_API_URL: import.meta.env.VITE_API_URL,
+    //             userId: userId,
+    //             protocol: window.location.protocol
+    //         });
+    //     }
         
-        // Cleanup
-        return () => {
-            if (socket) {
-                console.log('=== Cleaning up WebSocket ===');
-                console.log('Closing connection to:', socket.url);
-                socket.close();
-            }
-        };
-    }, [userId]);
+    //     // Cleanup
+    //     return () => {
+    //         if (socket) {
+    //             console.log('=== Cleaning up WebSocket ===');
+    //             console.log('Closing connection to:', socket.url);
+    //             socket.close();
+    //         }
+    //     };
+    // }, [userId]);
 
     // Handle file selection
     const handleFileChange = (e) => {
