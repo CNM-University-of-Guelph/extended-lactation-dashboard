@@ -110,29 +110,29 @@ class DataUploadView(APIView):
     parser_classes = [MultiPartParser]  # To handle file uploads
     permission_classes = [IsAuthenticated]  # Ensure user is authenticated
 
-    def send_progress_message(self, user_id, message):
-        try:
-            channel_layer = get_channel_layer()
-            # Create a unique group name for this user
-            group_name = f"user_{user_id}_progress"
+    # def send_progress_message(self, user_id, message):
+    #     try:
+    #         channel_layer = get_channel_layer()
+    #         # Create a unique group name for this user
+    #         group_name = f"user_{user_id}_progress"
             
-            # Send the message
-            async_to_sync(channel_layer.group_send)(
-                group_name,
-                {
-                    "type": "progress.message",  # This must match a method name in your consumer
-                    "message": {
-                        "progress": message
-                    }
-                }
-            )
-        except Exception as e:
-            print(f"Error sending progress message: {str(e)}")
+    #         # Send the message
+    #         async_to_sync(channel_layer.group_send)(
+    #             group_name,
+    #             {
+    #                 "type": "progress.message",  # This must match a method name in your consumer
+    #                 "message": {
+    #                     "progress": message
+    #                 }
+    #             }
+    #         )
+    #     except Exception as e:
+    #         print(f"Error sending progress message: {str(e)}")
     
     def post(self, request, *args, **kwargs):
         try:
             # Send initial progress
-            self.send_progress_message(request.user.id, "Starting upload...")
+            # self.send_progress_message(request.user.id, "Starting upload...")
             
             file_obj = request.FILES.get("file")
             if not file_obj:
@@ -154,7 +154,7 @@ class DataUploadView(APIView):
                 data = pd.read_csv(file_path)
 
             except Exception as e:
-                self.send_progress_message(request.user.id, f"Error loading file: {str(e)}")
+                # self.send_progress_message(request.user.id, f"Error loading file: {str(e)}")
                 return Response(
                     {"message": f"Error processing file: {str(e)}"}, 
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -162,38 +162,38 @@ class DataUploadView(APIView):
 
             # Process uploaded file
             try:
-                self.send_progress_message(request.user.id, "Validating data...")
+                # self.send_progress_message(request.user.id, "Validating data...")
                 validated_data, eligible_lactations, validation_messages = validate(data)
-                for msg in validation_messages:
-                    self.send_progress_message(request.user.id, msg)
+                # for msg in validation_messages:
+                #     self.send_progress_message(request.user.id, msg)
 
-                self.send_progress_message(request.user.id, "Cleaning data...")
+                # self.send_progress_message(request.user.id, "Cleaning data...")
                 cleaned_data, cleaning_messages = clean(validated_data)
-                for msg in cleaning_messages:
-                    self.send_progress_message(request.user.id, msg)
+                # for msg in cleaning_messages:
+                #     self.send_progress_message(request.user.id, msg)
 
-                self.send_progress_message(request.user.id, "Storing lactation data...")
+                # self.send_progress_message(request.user.id, "Storing lactation data...")
                 self.store_lactation_data(
                     cleaned_data, eligible_lactations, request.user
                 )
 
-                self.send_progress_message(request.user.id, "Creating input features...")
+                # self.send_progress_message(request.user.id, "Creating input features...")
                 self.create_input_features(
                     eligible_lactations, cleaned_data, request.user
                 )
 
-                self.send_progress_message(request.user.id, "Making predictions...")
+                # self.send_progress_message(request.user.id, "Making predictions...")
                 self.make_prediction(eligible_lactations, request)
 
-                self.send_progress_message(request.user.id, "Processing complete!")
+                # self.send_progress_message(request.user.id, "Processing complete!")
 
             except ValueError as e:
                 error_traceback = traceback.format_exc() 
-                self.send_progress_message(request.user.id, f"Error: {str(e)}\n{error_traceback}")
+                # self.send_progress_message(request.user.id, f"Error: {str(e)}\n{error_traceback}")
                 return Response({"message": f"Error processing file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             # Send completion message
-            self.send_progress_message(request.user.id, "Upload complete!")
+            # self.send_progress_message(request.user.id, "Upload complete!")
             
             return Response({
                 "message": "File processed and data stored successfully! Predictions have been made!",
@@ -223,10 +223,10 @@ class DataUploadView(APIView):
                                 (cleaned_data['Parity'].isin([parity, parity - 1]))]
             
             if subset.empty:
-                self.send_progress_message(
-                    user.id, 
-                    f"Warning: No data found for Cow {cow_id}, Parity {parity}. Skipping..."
-                )
+                # self.send_progress_message(
+                #     user.id, 
+                #     f"Warning: No data found for Cow {cow_id}, Parity {parity}. Skipping..."
+                # )
                 continue
 
             # Process and store each row in the subset
@@ -260,10 +260,10 @@ class DataUploadView(APIView):
         
                 # Skip if no current lactation data exists
                 if current_lactation.empty:
-                    self.send_progress_message(
-                        user_id=user.id,
-                        message=f"No data for current lactation of Cow {cow_id}, Parity {parity}. Skipping..."
-                    )
+                    # self.send_progress_message(
+                    #     user_id=user.id,
+                    #     message=f"No data for current lactation of Cow {cow_id}, Parity {parity}. Skipping..."
+                    # )
                     continue
 
                 features = multi_feature_construction(
@@ -277,20 +277,20 @@ class DataUploadView(APIView):
                 
                 # Skip if no current lactation data exists
                 if current_lactation.empty:
-                    self.send_progress_message(
-                        user_id=user.id,
-                        message=f"No data for current lactation of Cow {cow_id}, Parity {parity}. Skipping..."
-                    )
+                    # self.send_progress_message(
+                    #     user_id=user.id,
+                    #     message=f"No data for current lactation of Cow {cow_id}, Parity {parity}. Skipping..."
+                    # )
                     continue
 
                 features = primi_feature_construction(current_lactation)
 
 
             if features.empty:
-                self.send_progress_message(
-                    user_id=user.id,
-                    message=f"Error creating features for Cow {cow_id} and Parity {parity}. Skipping..."
-                )
+                # self.send_progress_message(
+                #     user_id=user.id,
+                #     message=f"Error creating features for Cow {cow_id} and Parity {parity}. Skipping..."
+                # )
                 continue
 
             try:
@@ -299,10 +299,10 @@ class DataUploadView(APIView):
                     )
                 
             except Lactation.DoesNotExist:
-                self.send_progress_message(
-                    user_id=user.id,
-                    message=f"Lactation for Cow {cow_id} and Parity {parity} not found. Skipping..."
-                )
+                # self.send_progress_message(
+                #     user_id=user.id,
+                #     message=f"Lactation for Cow {cow_id} and Parity {parity} not found. Skipping..."
+                # )
                 continue
             
             self.store_features(lactation, parity, features)
