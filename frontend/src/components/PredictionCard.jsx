@@ -16,8 +16,8 @@ function PredictionCard({
     extend3Cycle, 
     daysToTarget 
 }) {
-    const baseURL = "http://localhost:8000/media/";
-    const fullPlotPath = `${baseURL}${plotPath}`;
+    // const baseURL = "http://localhost:8000/media/";
+    // const fullPlotPath = `${baseURL}${plotPath}`;
 
     const [isExpanded, setIsExpanded] = useState(false);
     const [selectedTreatmentGroup, setSelectedTreatmentGroup] = useState(treatmentGroup);
@@ -108,7 +108,7 @@ function PredictionCard({
           {/* Expanded content */}
           <div className={`expanded-content ${isExpanded ? 'expanded' : ''}`}>
             <div className="plot-container">
-              <img src={fullPlotPath} alt="Prediction Plot" className="prediction-plot" />
+              <img src={plotPath} alt="Prediction Plot" className="prediction-plot" />
             </div>
             <div className="table-container">
               <table>
