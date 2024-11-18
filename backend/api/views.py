@@ -325,9 +325,9 @@ class DataUploadView(APIView):
                 continue
 
             try:
-                lactation = Lactation.objects.get(
-                    cow__cow_id=cow_id, parity=parity
-                    )
+                lactation = Lactation.objects.filter(
+                    cow__cow_id=cow_id, parity=parity, cow__owner=user
+                    ).first()
                 
             except Lactation.DoesNotExist:
                 # self.send_progress_message(
