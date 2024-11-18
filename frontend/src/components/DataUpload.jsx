@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import api from "../api";
 import "../styles/DataUpload.css"
 import { CSSTransition } from "react-transition-group";
+import { createWebSocket } from '../utils/websocket';
 
 function DataUpload({ fetchFiles, userId }) {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -12,38 +13,25 @@ function DataUpload({ fetchFiles, userId }) {
     const logTerminalRef = useRef(null);
 
     useEffect(() => {
-        let socket;
-    
-        const connectWebSocket = () => {
-            socket = new WebSocket(`ws://localhost:8000/ws/data-upload/${userId}/`);
-    
-            socket.onopen = () => {
-                console.log("WebSocket connection opened.");
-            };
-    
-            socket.onmessage = (e) => {
-                const data = JSON.parse(e.data);
-                const message = data.message;
-
-                // Split the message by line breaks and add each line as a new log entry
-                const splitMessages = message.split('\n');
-                setLogs((prevLogs) => [...prevLogs, ...splitMessages]);
-            };
-    
-            socket.onclose = () => {
-                console.log("WebSocket connection closed. Retrying in 3 seconds...");
-                setTimeout(connectWebSocket, 3000); // Retry after 3 seconds
-            };
-    
-            socket.onerror = (error) => {
-                console.error("WebSocket error:", error);
-            };
+        // Create WebSocket connection
+        const socket = createWebSocket(`/ws/data-upload/${userId}/`);
+        
+        socket.onopen = () => {
+            console.log('WebSocket connected');
         };
-    
-        connectWebSocket();
-    
+        
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log('Progress:', data);
+        };
+        
+        socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+        
+        // Cleanup on unmount
         return () => {
-            if (socket) socket.close();
+            socket.close();
         };
     }, [userId]);
 
