@@ -3,12 +3,15 @@ FROM node:18 AS build
 
 WORKDIR /app
 
+# Clear npm cache
+RUN npm cache clean --force
+
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
 
 # Install dependencies
 COPY frontend/package*.json ./
-RUN npm install
+RUN npm ci
 
 # Copy the rest of the application
 COPY frontend/ .
