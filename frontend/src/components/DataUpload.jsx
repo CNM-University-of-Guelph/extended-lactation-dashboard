@@ -13,25 +13,34 @@ function DataUpload({ fetchFiles, userId }) {
     const logTerminalRef = useRef(null);
 
     useEffect(() => {
-        // Create WebSocket connection
-        const socket = createWebSocket(`/ws/data-upload/${userId}/`);
+        let socket;
         
-        socket.onopen = () => {
-            console.log('WebSocket connected');
-        };
+        try {
+            socket = createWebSocket(`/ws/data-upload/${userId}/`);
+            
+            socket.onopen = () => {
+                console.log('WebSocket connected successfully');
+            };
+            
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log('Progress:', data);
+            };
+            
+            socket.onerror = (error) => {
+                console.error('WebSocket connection error:', error);
+                // Handle error (show user message, retry connection, etc.)
+            };
+            
+        } catch (error) {
+            console.error('Failed to create WebSocket:', error);
+            // Handle error (show user message, etc.)
+        }
         
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            console.log('Progress:', data);
-        };
-        
-        socket.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
-        
-        // Cleanup on unmount
         return () => {
-            socket.close();
+            if (socket) {
+                socket.close();
+            }
         };
     }, [userId]);
 
