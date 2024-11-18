@@ -661,19 +661,27 @@ class PredictionsListView(APIView):
     def get(self, request):
         logging.info("Predictions API called")
         predictions = Prediction.objects.filter(lactation__cow__owner=request.user).select_related("lactation__cow")
-
+        base_url = os.getenv('BACKEND_URL', 'http://localhost:8000')
         if not predictions.exists():
             logging.info("No predictions found")
 
         data = []
         for prediction in predictions:
+
+            plot_url = None
+            if prediction.plot_path:
+                if not prediction.plot_path.startswith('/media/'):
+                    plot_url = f"{base_url}/media/{prediction.plot_path}"
+                else:
+                    plot_url = f"{base_url}{prediction.plot_path}"
+
             data.append({
                 "cow_id": prediction.lactation.cow.cow_id,
                 "parity": prediction.lactation.parity,
                 "predicted_value": prediction.prediction_value,
                 "lactation_id": prediction.lactation.id,
                 "treatment_group": prediction.lactation.treatment_group,
-                "plot_path": prediction.plot_path,
+                "plot_path": plot_url,
                 "extend_1_cycle": prediction.extend_1_cycle,
                 "extend_2_cycle": prediction.extend_2_cycle,
                 "extend_3_cycle": prediction.extend_3_cycle,
