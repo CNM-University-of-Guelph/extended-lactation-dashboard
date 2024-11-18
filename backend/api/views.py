@@ -494,7 +494,9 @@ class DataUploadView(APIView):
         """
         for cow_id, parity in eligible_lactations:
             try:
-                lactation = Lactation.objects.get(cow__cow_id=cow_id, parity=parity)
+                lactation = Lactation.objects.filter(
+                    cow__cow_id=cow_id, parity=parity, cow__owner=request.user
+                    ).first()
                 model = self.load_model(lactation.parity_type)
                 input_features = self.get_input_features(lactation, parity)
 
