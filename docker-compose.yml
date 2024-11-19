@@ -4,11 +4,21 @@ services:
       dockerfile: backend/Dockerfile
     ports:
       - "8000:8000"
-    env_file:
-      - .env
     environment:
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      - DEBUG=True
+      - DJANGO_SECRET_KEY=django-insecure-zn2ff1cb_ih9+(y658)!ax@b2^4$xo0i2vu6qb)t17hjcv)=bp
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/lactation_db
+      - PGDATABASE=lactation_db
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
+      - PGHOST=db
+      - PGPORT=5432
       - CORS_ALLOWED_ORIGINS=http://localhost:3000
+      - CORS_ALLOW_ALL_ORIGINS=True
+      - CORS_ALLOWS_CREDENTIALS=True
+      - CHANNEL_LAYERS_BACKEND=channels.layers.InMemoryChannelLayer
+      - BACKEND_URL=http://localhost:8000
     depends_on:
       db:
         condition: service_healthy
@@ -21,7 +31,7 @@ services:
     build:
       dockerfile: frontend/Dockerfile
       args:
-        - RAILWAY_ENVIRONMENT=
+        - RAILWAY_ENVIRONMENT=dev
     ports:
       - "3000:3000"
     environment:
