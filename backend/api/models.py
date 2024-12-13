@@ -66,7 +66,7 @@ class LactationData(models.Model):
 
 class MultiparousFeatures(models.Model):
     lactation = models.OneToOneField(Lactation, on_delete=models.CASCADE)
-    parity = models.IntegerField()  # Parity of the cow
+    parity = models.FloatField()  # Parity of the cow
     milk_total_1_10 = models.FloatField()  # Milk total for days 1-10
     milk_total_11_20 = models.FloatField()  # Milk total for days 11-20
     milk_total_21_30 = models.FloatField()  # Milk total for days 21-30
@@ -75,13 +75,26 @@ class MultiparousFeatures(models.Model):
     milk_total_51_60 = models.FloatField()  # Milk total for days 51-60
     month_sin = models.FloatField()  # Sine of month
     month_cos = models.FloatField()  # Cosine of month
-    prev_persistency = models.FloatField()  # Persistency of the previous lactation
-    prev_lactation_length = models.IntegerField()  # Length of the previous lactation
-    prev_days_to_peak = models.IntegerField()  # Days to peak milk production in previous lactation
+    prev_a = models.FloatField()  # Dijkstra a parameter
     prev_305_my = models.FloatField()  # 305-day milk yield in previous lactation
-    persistency = models.FloatField()  # Persistency of current lactation
-    days_to_peak = models.IntegerField()  # Days to peak milk production in current lactation
+    prev_lact_length = models.FloatField()  # Length of the previous lactation
+    prev_my_end = models.FloatField()  # Previous milk yield at end
+    prev_days_to_peak = models.FloatField()  # Days to peak milk production in previous lactation
+    prev_peak_my = models.FloatField()  # Previous peak milk yield
+    prev_persistency = models.FloatField()  # Persistency of the previous lactation
+    current_a = models.FloatField()  # Current Dijkstra a parameter
     predicted_305_my = models.FloatField()  # Predicted 305-day milk yield in current lactation  
+    current_days_to_peak = models.FloatField()  # Current days to peak milk production
+    current_peak_my = models.FloatField()  # Current peak milk yield
+    predicted_persistency = models.FloatField()  # Predicted persistency
+    my_variance = models.FloatField()  # Variance of milk total
+    rate_of_my_change = models.FloatField()  # Rate of change in milk total
+    prev_dijkstra_b_eqn = models.FloatField()  # Previous Dijkstra b equation parameter
+    prev_dijkstra_b0_eqn = models.FloatField()  # Previous Dijkstra b0 equation parameter
+    prev_dijkstra_c_eqn = models.FloatField()  # Previous Dijkstra c equation parameter
+    current_dijkstra_b_eqn = models.FloatField()  # Current Dijkstra b equation parameter
+    current_dijkstra_b0_eqn = models.FloatField()  # Current Dijkstra b0 equation parameter
+    current_dijkstra_c_eqn = models.FloatField()  # Current Dijkstra c equation parameter
 
     def __str__(self):
         return f"Features for {self.lactation.cow.cow_id} - Parity {self.lactation.parity}"
@@ -95,13 +108,16 @@ class PrimiparousFeatures(models.Model):
     milk_total_31_40 = models.FloatField()  # Milk total for days 31-40
     milk_total_41_50 = models.FloatField()  # Milk total for days 41-50
     milk_total_51_60 = models.FloatField()  # Milk total for days 51-60
-    a = models.FloatField() # Dijkstra a parameter
-    b = models.FloatField() # Dijkstra b parameter
-    b0 = models.FloatField() # Dijkstra b0 parameter
-    c = models.FloatField() # Dijkstra c parameter
-    predicted_305_my = models.FloatField()  # Predicted 305-day milk yield in current lactation  
     month_sin = models.FloatField()  # Sine of month
     month_cos = models.FloatField()  # Cosine of month
+    a = models.FloatField() # Dijkstra a parameter
+    my_variance = models.FloatField()  # Variance of milk total
+    rate_of_my_change = models.FloatField()  # Rate of change in milk total
+    predicted_305_my = models.FloatField()  # Predicted 305-day milk yield in current lactation  
+    current_dijkstra_b_eqn = models.FloatField()  # Current Dijkstra b equation parameter
+    current_dijkstra_b_b0_eqn = models.FloatField()  # Current Dijkstra b b0 equation parameter
+    current_dijkstra_b0_eqn = models.FloatField()  # Current Dijkstra b0 equation parameter
+    current_dijkstra_c_eqn = models.FloatField()  # Current Dijkstra c equation parameter
 
     def __str__(self):
         return f"Features for {self.lactation.cow.cow_id} - Parity {self.lactation.parity}"

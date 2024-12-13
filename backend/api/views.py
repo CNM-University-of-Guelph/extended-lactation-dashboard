@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import joblib
+import sklearn
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
@@ -268,15 +269,20 @@ class DataUploadView(APIView):
                     cow=cow, parity=row['Parity'], 
                     parity_type=Lactation.PRIMIPAROUS if row['Parity'] == 1 else Lactation.MULTIPAROUS
                 )
+                
+                try:
+                    LactationData.objects.get_or_create(
+                        lactation=lactation,
+                        dim=row['DIM'],
+                        defaults={
+                            'date': row['Date'],
+                            'milk_yield': row['MilkTotal']
+                        }
+                    )
 
-                LactationData.objects.get_or_create(
-                    lactation=lactation,
-                    dim=row['DIM'],
-                    defaults={
-                        'date': row['Date'],
-                        'milk_yield': row['MilkTotal']
-                    }
-                )
+                except LactationData.DoesNotExist:
+                    print(f"LactationData not found for Lactation {lactation} and DIM {row['DIM']}")
+                    continue
 
     def create_input_features(self, eligible_lactations: list, cleaned_data: pd.DataFrame, user):
         for cow_id, parity in eligible_lactations:
@@ -349,25 +355,38 @@ class DataUploadView(APIView):
         if parity > 1:
             features, created = MultiparousFeatures.objects.update_or_create(
                 lactation=lactation,
-                defaults={
-                    'parity': features_df['Parity'].iloc[0],
-                    'milk_total_1_10': features_df['MilkTotal_1-10'].iloc[0],
-                    'milk_total_11_20': features_df['MilkTotal_11-20'].iloc[0],
-                    'milk_total_21_30': features_df['MilkTotal_21-30'].iloc[0],
-                    'milk_total_31_40': features_df['MilkTotal_31-40'].iloc[0],
-                    'milk_total_41_50': features_df['MilkTotal_41-50'].iloc[0],
-                    'milk_total_51_60': features_df['MilkTotal_51-60'].iloc[0],
-                    'month_sin': features_df['Month_sin'].iloc[0],
-                    'month_cos': features_df['Month_cos'].iloc[0],
-                    'prev_persistency': features_df['prev_persistency'].iloc[0],
-                    'prev_lactation_length': features_df['prev_lactation_length'].iloc[0],
-                    'prev_days_to_peak': features_df['prev_days_to_peak'].iloc[0],
-                    'prev_305_my': features_df['prev_305_my'].iloc[0],
-                    'persistency': features_df['persistency'].iloc[0],
-                    'days_to_peak': features_df['days_to_peak'].iloc[0],
-                    'predicted_305_my': features_df['predicted_305_my'].iloc[0],
-                }
-            )
+        defaults={
+            'parity': features_df['Parity'].iloc[0],
+            'milk_total_1_10': features_df['MilkTotal_1-10'].iloc[0],
+            'milk_total_11_20': features_df['MilkTotal_11-20'].iloc[0],
+            'milk_total_21_30': features_df['MilkTotal_21-30'].iloc[0],
+            'milk_total_31_40': features_df['MilkTotal_31-40'].iloc[0],
+            'milk_total_41_50': features_df['MilkTotal_41-50'].iloc[0],
+            'milk_total_51_60': features_df['MilkTotal_51-60'].iloc[0],
+            'month_sin': features_df['month_sin'].iloc[0],
+            'month_cos': features_df['month_cos'].iloc[0],
+            'prev_a': features_df['prev_a'].iloc[0],  # Added
+            'prev_305_my': features_df['prev_305_my'].iloc[0],
+            'prev_lact_length': features_df['prev_lact_length'].iloc[0],  # Updated to match model
+            'prev_my_end': features_df['prev_my_end'].iloc[0],  # Added
+            'prev_days_to_peak': features_df['prev_days_to_peak'].iloc[0],
+            'prev_peak_my': features_df['prev_peak_my'].iloc[0],  # Added
+            'prev_persistency': features_df['prev_persistency'].iloc[0],
+            'current_a': features_df['current_a'].iloc[0],  # Added
+            'predicted_305_my': features_df['predicted_305_my'].iloc[0],
+            'current_days_to_peak': features_df['current_days_to_peak'].iloc[0],  # Added
+            'current_peak_my': features_df['current_peak_my'].iloc[0],  # Added
+            'predicted_persistency': features_df['predicted_persistency'].iloc[0],  # Added
+            'my_variance': features_df['my_variance'].iloc[0],  # Added
+            'rate_of_my_change': features_df['rate_of_my_change'].iloc[0],  # Added
+            'prev_dijkstra_b_eqn': features_df['prev_dijkstra_b_eqn'].iloc[0],  # Added
+            'prev_dijkstra_b0_eqn': features_df['prev_dijkstra_b0_eqn'].iloc[0],  # Added
+            'prev_dijkstra_c_eqn': features_df['prev_dijkstra_c_eqn'].iloc[0],  # Added
+            'current_dijkstra_b_eqn': features_df['current_dijkstra_b_eqn'].iloc[0],  # Added
+            'current_dijkstra_b0_eqn': features_df['current_dijkstra_b0_eqn'].iloc[0],  # Added
+            'current_dijkstra_c_eqn': features_df['current_dijkstra_c_eqn'].iloc[0],  # Added
+            }
+        )
 
         elif parity == 1:
             features, created = PrimiparousFeatures.objects.update_or_create(
@@ -379,13 +398,16 @@ class DataUploadView(APIView):
                     'milk_total_31_40': features_df['MilkTotal_31-40'].iloc[0],
                     'milk_total_41_50': features_df['MilkTotal_41-50'].iloc[0],
                     'milk_total_51_60': features_df['MilkTotal_51-60'].iloc[0],
-                    'predicted_305_my': features_df['predicted_305_my'].iloc[0],
+                    'month_sin': features_df['month_sin'].iloc[0],
+                    'month_cos': features_df['month_cos'].iloc[0],
                     'a' : features_df['a'].iloc[0],
-                    'b' : features_df['b'].iloc[0],
-                    'b0' : features_df['b0'].iloc[0],
-                    'c' : features_df['c'].iloc[0],
-                    'month_sin': features_df['Month_sin'].iloc[0],
-                    'month_cos': features_df['Month_cos'].iloc[0],
+                    'my_variance': features_df['my_variance'].iloc[0],  # Added
+                    'rate_of_my_change': features_df['rate_of_my_change'].iloc[0],  # Added
+                    'predicted_305_my': features_df['predicted_305_my'].iloc[0],
+                    'current_dijkstra_b_eqn': features_df['current_dijkstra_b_eqn'].iloc[0],  # Added
+                    'current_dijkstra_b_b0_eqn': features_df['current_dijkstra_b_b0_eqn'].iloc[0],  # Added
+                    'current_dijkstra_b0_eqn': features_df['current_dijkstra_b0_eqn'].iloc[0],  # Added
+                    'current_dijkstra_c_eqn': features_df['current_dijkstra_c_eqn'].iloc[0],  # Added
                 }
             )
 
@@ -397,9 +419,9 @@ class DataUploadView(APIView):
     def load_model(self, parity_type):
         models_dir = os.path.join(settings.BASE_DIR, "api/ml_models")
         if parity_type == Lactation.PRIMIPAROUS:
-            model_path = os.path.join(models_dir, "SVR_primiparous.sav")
+            model_path = os.path.join(models_dir, "primi_svr.pkl")
         elif parity_type == Lactation.MULTIPAROUS:
-            model_path = os.path.join(models_dir, "SVR_multiparous.sav")
+            model_path = os.path.join(models_dir, "multi_voting_ensemble.pkl")
         else:
             raise ValueError(
                 f"load_models got an unexpected parity type: {parity_type}"
@@ -417,6 +439,7 @@ class DataUploadView(APIView):
                     getattr(features, feature) for feature in feature_list
                     ]
                 return np.array(feature_values).reshape(1, -1)
+                       
             except model.DoesNotExist:
                 print(f"No features found for Lactation {lactation}. Skipping...")
                 return None
@@ -424,22 +447,14 @@ class DataUploadView(APIView):
         if parity > 1:
             # Multiparous feature list
             multiparous_feature_list = [
-                'parity',
-                'milk_total_1_10',
-                'milk_total_11_20',
-                'milk_total_21_30',
-                'milk_total_31_40',
-                'milk_total_41_50',
-                'milk_total_51_60',
-                'prev_persistency',
-                'prev_lactation_length',
-                'prev_days_to_peak',
-                'prev_305_my',
-                'persistency',
-                'days_to_peak',
-                'predicted_305_my',
-                'month_sin',
-                'month_cos'
+                'parity', 'milk_total_1_10', 'milk_total_11_20', 'milk_total_21_30', 
+                'milk_total_31_40', 'milk_total_41_50', 'milk_total_51_60', 'month_sin', 
+                'month_cos', 'prev_a', 'prev_305_my', 'prev_lact_length', 'prev_my_end', 
+                'prev_days_to_peak', 'prev_peak_my', 'prev_persistency', 'current_a', 
+                'predicted_305_my', 'current_days_to_peak', 'current_peak_my', 
+                'predicted_persistency', 'my_variance', 'rate_of_my_change', 
+                'prev_dijkstra_b_eqn', 'prev_dijkstra_b0_eqn', 'prev_dijkstra_c_eqn', 
+                'current_dijkstra_b_eqn', 'current_dijkstra_b0_eqn', 'current_dijkstra_c_eqn'
             ]
             return fetch_features(MultiparousFeatures, lactation, multiparous_feature_list)
 
@@ -452,13 +467,16 @@ class DataUploadView(APIView):
                 'milk_total_31_40',
                 'milk_total_41_50',
                 'milk_total_51_60',
-                'a',
-                'b',
-                'b0',
-                'c',
-                'predicted_305_my',
                 'month_sin',
-                'month_cos'
+                'month_cos',
+                'a',
+                'my_variance',
+                'rate_of_my_change',
+                'predicted_305_my',
+                'current_dijkstra_b_eqn',
+                'current_dijkstra_b_b0_eqn',
+                'current_dijkstra_b0_eqn',
+                'current_dijkstra_c_eqn',
             ]
             return fetch_features(PrimiparousFeatures, lactation, primiparous_feature_list)
         
@@ -522,7 +540,7 @@ class DataUploadView(APIView):
             if day_305_my > 20:
                 return 305 + int((20 - day_305_my) / persistency)
             else:
-                return None
+                return 0
 
         def plot_days_to_target(lactation_data, predicted_305_my, approx_persistency, last_dim, days_to_target, cow_id, parity, request):
             """
