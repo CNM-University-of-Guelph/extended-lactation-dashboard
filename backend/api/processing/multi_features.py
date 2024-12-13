@@ -5,8 +5,11 @@ import sys
 import lmfit
 import numpy as np
 import pandas as pd
+from scipy.stats import linregress
 import sklearn.preprocessing
+import joblib
 
+from django.conf import settings
 
 pd.options.mode.chained_assignment = None
 
@@ -20,9 +23,9 @@ def multi_feature_construction(
 
     # Cyclic encode month
     min_dim = current_lactation.loc[current_lactation.groupby(["Cow", "Parity"])["DIM"].idxmin()]
-    min_dim["Month"] = min_dim["Date"].dt.month
-    min_dim = min_dim[["Cow", "Parity", "Month"]]
-    min_dim = cyclic_encode(min_dim, "Month", 12)
+    min_dim["month"] = min_dim["Date"].dt.month
+    min_dim = min_dim[["Cow", "Parity", "month"]]
+    min_dim = cyclic_encode(min_dim, "month", 12)
     features = features.merge(min_dim, on=["Cow", "Parity"], how="left")
 
     # Fit Dijkstra
@@ -37,6 +40,19 @@ def multi_feature_construction(
         # Error handling is setup in DataUploadView
         return features
 
+    # Previous End of Lactation MY
+    features["prev_my_end"] = dijkstra(
+        features["prev_lact_length"], features["prev_a"], features["prev_b"],
+        features["prev_b0"], features["prev_c"]
+    )
+
+    # Previous peak MY
+    features["prev_peak_my"] = dijkstra(
+        features["prev_days_to_peak"], features["prev_a"], 
+        features["prev_b"], features["prev_b0"], 
+        features["prev_c"] 
+    )
+
     # Fit Dijkstra (60 DIM + Previous d305 MY)
     current_persistency = features.apply(
         calculate_current_persistency, axis=1, args=(current_lactation,)
@@ -49,21 +65,82 @@ def multi_feature_construction(
         # Error handling is setup in DataUploadView
         return features
 
-    # TODO Save the scaler for the dataset and load here. MinMax scaling a single 
-    # row makes all values 0.
+    # Predicted d305 MY
+    features["predicted_305_my"] = dijkstra(
+        305,
+        features["current_a"],
+        features["current_b"],
+        features["current_b0"],
+        features["current_c"]
+    )
+
+    # Current days to peak
+    features["current_days_to_peak"] = get_dijkstra_days_to_peak(
+        features["current_b"], features["current_b0"], 
+        features["current_c"]
+    )
+
+    # Current peak MY
+    features["current_peak_my"] = dijkstra(
+        features["current_days_to_peak"],
+        features["current_a"],
+        features["current_b"],
+        features["current_b0"],
+        features["current_c"]
+    )
+
+    # Predicted persistency
+    features["predicted_persistency"] = get_persistency(
+        features["predicted_305_my"], features["current_peak_my"], 
+        305, features["current_days_to_peak"]
+    )
+
+    features["my_variance"] = get_milk_total_variance(current_lactation)
+    features["rate_of_my_change"] = get_rate_of_milk_change(current_lactation)
+
+    # Previous Dijkstra parameters adjusted to equation
+    features["prev_dijkstra_b_eqn"] = get_dijkstra_b_eqn(
+        features["prev_b"]
+    )
+    features["prev_dijkstra_b0_eqn"] = get_dijkstra_b0_eqn(
+        features["prev_b0"], 150
+    )
+    features["prev_dijkstra_c_eqn"] = get_dijkstra_c_eqn(
+        features["prev_c"], 150
+    )
+
+    # Current Dijkstra parameters adjusted to equation
+    features["current_dijkstra_b_eqn"] = get_dijkstra_b_eqn(
+        features["current_b"]
+    )
+    features["current_dijkstra_b0_eqn"] = get_dijkstra_b0_eqn(
+        features["current_b0"], 150
+    )
+    features["current_dijkstra_c_eqn"] = get_dijkstra_c_eqn(
+        features["current_c"], 150
+    )
+
+    required_columns = [
+        'Parity', 'MilkTotal_1-10', 'MilkTotal_11-20', 'MilkTotal_21-30', 
+        'MilkTotal_31-40', 'MilkTotal_41-50', 'MilkTotal_51-60', 'month_sin', 
+        'month_cos', 'prev_a', 'prev_305_my', 'prev_lact_length', 'prev_my_end', 
+        'prev_days_to_peak', 'prev_peak_my', 'prev_persistency', 'current_a', 
+        'predicted_305_my', 'current_days_to_peak', 'current_peak_my', 
+        'predicted_persistency', 'my_variance', 'rate_of_my_change', 
+        'prev_dijkstra_b_eqn', 'prev_dijkstra_b0_eqn', 'prev_dijkstra_c_eqn', 
+        'current_dijkstra_b_eqn', 'current_dijkstra_b0_eqn', 'current_dijkstra_c_eqn'
+    ]
+
+    # Ensure only the required columns are included and in the specified order
+    features = features[required_columns]
+
     # MinMax Scaling
-    features = features.drop(columns={"Cow"})
-    # month_cos = features.pop("Month_cos")
-    # month_sin = features.pop("Month_sin")
-
-
-    # scaler = sklearn.preprocessing.MinMaxScaler(feature_range=(0, 1))
-    # scaled_data = scaler.fit_transform(features)
-    # scaled_dataset = pd.DataFrame(scaled_data, columns=features.columns)
-    # scaled_dataset["Month_sin"] = month_sin.values
-    # scaled_dataset["Month_cos"] = month_cos.values
-    # return scaled_dataset
-    return features 
+    scalers_dir = os.path.join(settings.BASE_DIR, "api/scalers")
+    scaler_path = os.path.join(scalers_dir, "multiparous_scaler.joblib")
+    scaler = joblib.load(scaler_path)
+    scaled_data = scaler.transform(features)
+    scaled_data = pd.DataFrame(scaled_data, columns=required_columns)
+    return scaled_data
 
 
 def transform_10d_averages(df: pd.DataFrame, dim: int) -> pd.DataFrame:
@@ -114,7 +191,7 @@ def calculate_previous_persistency(row, previous_lactation):
     if data.empty or len(data) <= 60:
         return pd.Series({
                           'prev_persistency': np.nan, 
-                          "prev_lactation_length": np.nan, 
+                          "prev_lact_length": np.nan, 
                           "prev_days_to_peak": np.nan, 
                           "prev_305_my": np.nan
                           })
@@ -122,7 +199,7 @@ def calculate_previous_persistency(row, previous_lactation):
     x = data['MilkTotal']
     t = data['DIM']
     param_specs = {
-        'a': {'value': 100, 'min': 0, 'max': 250},
+        'a': {'value': 30, 'min': 0, 'max': 100},
         'b': {'value': 0.01, 'min': 0.0001, 'max': 0.09},
         'b0': {'value': 0.01, 'min': 0, 'max': 0.09},
         'c': {'value': 0.001, 'min': 0, 'max': 0.005}
@@ -142,8 +219,12 @@ def calculate_previous_persistency(row, previous_lactation):
 
     persistency = calculate_persistency(my_end, py, t_end, pt)
     return pd.Series({
+        'prev_a': a,
+        'prev_b': b,
+        'prev_b0': b0,
+        'prev_c': c,
         'prev_persistency': persistency, 
-        'prev_lactation_length': t_end,
+        'prev_lact_length': t_end,
         'prev_days_to_peak': pt,
         "prev_305_my": prev_305_my}
         )
@@ -216,7 +297,7 @@ def calculate_current_persistency(row, current_lactation):
     t = pd.concat([t, pd.Series([305])], ignore_index=True)
 
     param_specs = {
-        'a': {'value': 100, 'min': 0, 'max': 250},
+        'a': {'value': 30, 'min': 0, 'max': 100},
         'b': {'value': 0.01, 'min': 0.0001, 'max': 0.09},
         'b0': {'value': 0.01, 'min': 0, 'max': 0.09},
         'c': {'value': 0.001, 'min': 0, 'max': 0.005}
@@ -238,8 +319,59 @@ def calculate_current_persistency(row, current_lactation):
         "persistency": persistency,
         "days_to_peak": pt,
         "predicted_305_my": my_end,
-        # "a": a,
-        # "b": b,
-        # "b0": b0,
-        # "c": c
+        "current_a": a,
+        "current_b": b,
+        "current_b0": b0,
+        "current_c": c
     })
+
+
+def get_persistency(my_end, py, t_end, pt):
+    """
+    my_end (float): milk yield end of lactation
+    py (float): peak milk yield
+    t_end (float): days to end of lactation
+    pt (float): days to peak milk yield
+    """
+    return (my_end - py) / (t_end - pt)
+
+
+def get_dijkstra_days_to_peak(b, b0, c):
+    return round(np.log(b / c) / b0) 
+
+
+def get_milk_total_variance(current_lactation):
+    """
+    Calculate the variance of MilkTotal over the first 60 DIM using data_import
+    and add it to transformed_data as the column 'my_variance'.
+    """
+    variance_data = current_lactation[current_lactation['DIM'] <= 60]['MilkTotal'].copy()
+    my_variance = variance_data.var()
+    return my_variance
+
+
+def get_rate_of_milk_change(current_lactation):
+    """
+    Fit a line to MilkTotal over the first 60 DIM using data_import, 
+    calculate the slope, and add it to transformed_data as 'rate_of_my_change'.
+    """
+    change_data = current_lactation[current_lactation['DIM'] <= 60].copy()
+    
+    if len(change_data) > 1:
+        slope, _, _, _, _ = linregress(change_data['DIM'], change_data['MilkTotal'])
+    else:
+        slope = np.nan 
+    
+    return slope
+
+
+def get_dijkstra_b_eqn(b):
+    return np.exp(b)
+
+
+def get_dijkstra_b0_eqn(b0, t):
+    return np.exp(-b0 * t)
+
+
+def get_dijkstra_c_eqn(c, t):
+    return np.exp(-c * t)
