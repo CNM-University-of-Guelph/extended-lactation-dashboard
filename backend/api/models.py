@@ -108,13 +108,16 @@ class PrimiparousFeatures(models.Model):
     milk_total_31_40 = models.FloatField()  # Milk total for days 31-40
     milk_total_41_50 = models.FloatField()  # Milk total for days 41-50
     milk_total_51_60 = models.FloatField()  # Milk total for days 51-60
-    a = models.FloatField() # Dijkstra a parameter
-    b = models.FloatField() # Dijkstra b parameter
-    b0 = models.FloatField() # Dijkstra b0 parameter
-    c = models.FloatField() # Dijkstra c parameter
-    predicted_305_my = models.FloatField()  # Predicted 305-day milk yield in current lactation  
     month_sin = models.FloatField()  # Sine of month
     month_cos = models.FloatField()  # Cosine of month
+    a = models.FloatField() # Dijkstra a parameter
+    my_variance = models.FloatField()  # Variance of milk total
+    rate_of_my_change = models.FloatField()  # Rate of change in milk total
+    predicted_305_my = models.FloatField()  # Predicted 305-day milk yield in current lactation  
+    current_dijkstra_b_eqn = models.FloatField()  # Current Dijkstra b equation parameter
+    current_dijkstra_b_b0_eqn = models.FloatField()  # Current Dijkstra b b0 equation parameter
+    current_dijkstra_b0_eqn = models.FloatField()  # Current Dijkstra b0 equation parameter
+    current_dijkstra_c_eqn = models.FloatField()  # Current Dijkstra c equation parameter
 
     def __str__(self):
         return f"Features for {self.lactation.cow.cow_id} - Parity {self.lactation.parity}"

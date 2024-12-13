@@ -398,13 +398,16 @@ class DataUploadView(APIView):
                     'milk_total_31_40': features_df['MilkTotal_31-40'].iloc[0],
                     'milk_total_41_50': features_df['MilkTotal_41-50'].iloc[0],
                     'milk_total_51_60': features_df['MilkTotal_51-60'].iloc[0],
-                    'predicted_305_my': features_df['predicted_305_my'].iloc[0],
+                    'month_sin': features_df['month_sin'].iloc[0],
+                    'month_cos': features_df['month_cos'].iloc[0],
                     'a' : features_df['a'].iloc[0],
-                    'b' : features_df['b'].iloc[0],
-                    'b0' : features_df['b0'].iloc[0],
-                    'c' : features_df['c'].iloc[0],
-                    'month_sin': features_df['Month_sin'].iloc[0],
-                    'month_cos': features_df['Month_cos'].iloc[0],
+                    'my_variance': features_df['my_variance'].iloc[0],  # Added
+                    'rate_of_my_change': features_df['rate_of_my_change'].iloc[0],  # Added
+                    'predicted_305_my': features_df['predicted_305_my'].iloc[0],
+                    'current_dijkstra_b_eqn': features_df['current_dijkstra_b_eqn'].iloc[0],  # Added
+                    'current_dijkstra_b_b0_eqn': features_df['current_dijkstra_b_b0_eqn'].iloc[0],  # Added
+                    'current_dijkstra_b0_eqn': features_df['current_dijkstra_b0_eqn'].iloc[0],  # Added
+                    'current_dijkstra_c_eqn': features_df['current_dijkstra_c_eqn'].iloc[0],  # Added
                 }
             )
 
@@ -416,7 +419,7 @@ class DataUploadView(APIView):
     def load_model(self, parity_type):
         models_dir = os.path.join(settings.BASE_DIR, "api/ml_models")
         if parity_type == Lactation.PRIMIPAROUS:
-            model_path = os.path.join(models_dir, "SVR_primiparous.sav")
+            model_path = os.path.join(models_dir, "primi_svr.pkl")
         elif parity_type == Lactation.MULTIPAROUS:
             model_path = os.path.join(models_dir, "multi_voting_ensemble.pkl")
         else:
@@ -464,13 +467,16 @@ class DataUploadView(APIView):
                 'milk_total_31_40',
                 'milk_total_41_50',
                 'milk_total_51_60',
-                'a',
-                'b',
-                'b0',
-                'c',
-                'predicted_305_my',
                 'month_sin',
-                'month_cos'
+                'month_cos',
+                'a',
+                'my_variance',
+                'rate_of_my_change',
+                'predicted_305_my',
+                'current_dijkstra_b_eqn',
+                'current_dijkstra_b_b0_eqn',
+                'current_dijkstra_b0_eqn',
+                'current_dijkstra_c_eqn',
             ]
             return fetch_features(PrimiparousFeatures, lactation, primiparous_feature_list)
         
