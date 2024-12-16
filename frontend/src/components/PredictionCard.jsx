@@ -78,7 +78,7 @@ function PredictionCard({
                 <p className="value">{`${formatNumber(predictedValue)} kg/d`}</p>
               </div>
               <div className="days-to-target-section">
-                <h3 className="label">Days to 20 kg/d</h3>
+                <h3 className="label">Days to 25 kg/d</h3>
                 <p className="value">{daysToTarget}</p>
               </div>
               <div className="treatment-group-section">

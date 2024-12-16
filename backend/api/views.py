@@ -537,8 +537,8 @@ class DataUploadView(APIView):
             return day_305_my + (persistency * (21 * num_cycles))
 
         def predict_days_to_target(day_305_my, persistency):
-            if day_305_my > 20:
-                return 305 + int((20 - day_305_my) / persistency)
+            if day_305_my > 25:
+                return 305 + int((25 - day_305_my) / persistency)
             else:
                 return 0
 
@@ -551,7 +551,7 @@ class DataUploadView(APIView):
                 predicted_305_my (float): Predicted milk yield at day 305.
                 approx_persistency (float): The approximate persistency.
                 last_dim (int): The last DIM recorded for the lactation.
-                days_to_target (float): The DIM at which milk yield is expected to reach 20 kg/d.
+                days_to_target (float): The DIM at which milk yield is expected to reach 25 kg/d.
                 cow_id (str): The cow ID.
                 parity (int): The lactation parity.
             
@@ -582,7 +582,7 @@ class DataUploadView(APIView):
             plt.text(mid_dim, mid_milk_yield, f"Slope: {slope:.2f}", color='red', fontsize=10)
 
             # Plot days to 20kg/d target
-            plt.scatter([days_to_target], [20], color='green', label=f"Days to 20 kg/d: {days_to_target:.0f} DIM", zorder=5)
+            plt.scatter([days_to_target], [25], color='green', label=f"Days to 25 kg/d: {days_to_target:.0f} DIM", zorder=5)
 
             # Labels and legend
             plt.xlabel("DIM (Days In Milk)")
