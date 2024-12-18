@@ -258,6 +258,19 @@ def calculate_previous_305_my(row, previous_lactation):
                                       (previous_lactation['DIM'].between(303, 307))]
         if not filtered.empty:
             return filtered['MilkTotal'].mean()
+
+        elif filtered.empty:
+            # Handle cases where there is no DIM 303-307 records for the previous lactation
+            cow_prev_lac = previous_lactation[(previous_lactation['Cow'] == cow) &
+                                            (previous_lactation['Parity'] == parity) &
+                                            (previous_lactation['DIM'] < 305)]
+            closest_dim = cow_prev_lac["DIM"].max()
+            closest_records = previous_lactation[(previous_lactation['Cow'] == cow) &
+                                                (previous_lactation['Parity'] == parity) &
+                                                (previous_lactation['DIM'].between(closest_dim - 5, closest_dim))]
+            if not closest_records.empty:
+                return closest_records["MilkTotal"].mean()
+
     return np.nan  
 
 
