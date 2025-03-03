@@ -13,7 +13,14 @@ function PredictionCard({
     plotPath, 
     extend1Cycle, 
     extend2Cycle, 
-    extend3Cycle, 
+    extend3Cycle,
+    extend4Cycle,
+    extend5Cycle,
+    extend6Cycle,
+    extend7Cycle,
+    extend8Cycle,
+    extend9Cycle,
+    extend10Cycle,
     daysToTarget 
 }) {
     // const baseURL = "http://localhost:8000/media/";
@@ -92,6 +99,13 @@ function PredictionCard({
                   <option value="Extend 1 cycle">Extend 1 cycle</option>
                   <option value="Extend 2 cycles">Extend 2 cycles</option>
                   <option value="Extend 3 cycles">Extend 3 cycles</option>
+                  <option value="Extend 4 cycles">Extend 4 cycles</option>
+                  <option value="Extend 5 cycles">Extend 5 cycles</option>
+                  <option value="Extend 6 cycles">Extend 6 cycles</option>
+                  <option value="Extend 7 cycles">Extend 7 cycles</option>
+                  <option value="Extend 8 cycles">Extend 8 cycles</option>
+                  <option value="Extend 9 cycles">Extend 9 cycles</option>
+                  <option value="Extend 10 cycles">Extend 10 cycles</option>
                   <option value="Do not extend">Do not extend</option>
                 </select>
               </div>
@@ -117,6 +131,13 @@ function PredictionCard({
                     <th>Extend 1 Cycle</th>
                     <th>Extend 2 Cycles</th>
                     <th>Extend 3 Cycles</th>
+                    <th>Extend 4 Cycles</th>
+                    <th>Extend 5 Cycles</th>
+                    <th>Extend 6 Cycles</th>
+                    <th>Extend 7 Cycles</th>
+                    <th>Extend 8 Cycles</th>
+                    <th>Extend 9 Cycles</th>
+                    <th>Extend 10 Cycles</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -124,6 +145,13 @@ function PredictionCard({
                     <td>{formatNumber(extend1Cycle)}</td>
                     <td>{formatNumber(extend2Cycle)}</td>
                     <td>{formatNumber(extend3Cycle)}</td>
+                    <td>{formatNumber(extend4Cycle)}</td>
+                    <td>{formatNumber(extend5Cycle)}</td>
+                    <td>{formatNumber(extend6Cycle)}</td>
+                    <td>{formatNumber(extend7Cycle)}</td>
+                    <td>{formatNumber(extend8Cycle)}</td>
+                    <td>{formatNumber(extend9Cycle)}</td>
+                    <td>{formatNumber(extend10Cycle)}</td>
                   </tr>
                 </tbody>
               </table>
