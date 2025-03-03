@@ -655,16 +655,16 @@ class DataUploadView(APIView):
                 predicted_305_my, approx_persistency
                 )
             
-            plot_path = plot_days_to_target(
-                lactation_data=lactation_data,
-                predicted_305_my=predicted_305_my,
-                approx_persistency=approx_persistency,
-                last_dim=60,
-                days_to_target=days_to_target,
-                cow_id=lactation.cow.cow_id,
-                parity=lactation.parity,
-                request=request
-            )
+            # plot_path = plot_days_to_target(
+            #     lactation_data=lactation_data,
+            #     predicted_305_my=predicted_305_my,
+            #     approx_persistency=approx_persistency,
+            #     last_dim=60,
+            #     days_to_target=days_to_target,
+            #     cow_id=lactation.cow.cow_id,
+            #     parity=lactation.parity,
+            #     request=request
+            # )
 
             return {
                 "approx_persistency": approx_persistency,
@@ -679,7 +679,7 @@ class DataUploadView(APIView):
                 "extend_9_cycle": extend_9_cycle,
                 "extend_10_cycle": extend_10_cycle,
                 "days_to_target": days_to_target,
-                "plot_path": plot_path
+                "plot_path": "no/plot/path"
             }
         
         else:
