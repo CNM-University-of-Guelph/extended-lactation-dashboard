@@ -101,6 +101,13 @@ function Predictions() {
                             extend1Cycle={prediction.extend_1_cycle}
                             extend2Cycle={prediction.extend_2_cycle}
                             extend3Cycle={prediction.extend_3_cycle}
+                            extend4Cycle={prediction.extend_4_cycle}
+                            extend5Cycle={prediction.extend_5_cycle}
+                            extend6Cycle={prediction.extend_6_cycle}
+                            extend7Cycle={prediction.extend_7_cycle}
+                            extend8Cycle={prediction.extend_8_cycle}
+                            extend9Cycle={prediction.extend_9_cycle}
+                            extend10Cycle={prediction.extend_10_cycle}
                             daysToTarget={prediction.days_to_target}
                         />
                     ))

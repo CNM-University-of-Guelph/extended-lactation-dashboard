@@ -35,6 +35,13 @@ class Lactation(models.Model):
         ('Extend 1 cycle', 'Extend 1 cycle'),
         ('Extend 2 cycles', 'Extend 2 cycles'),
         ('Extend 3 cycles', 'Extend 3 cycles'),
+        ('Extend 4 cycles', 'Extend 4 cycles'),
+        ('Extend 5 cycles', 'Extend 5 cycles'),
+        ('Extend 6 cycles', 'Extend 6 cycles'),
+        ('Extend 7 cycles', 'Extend 7 cycles'),
+        ('Extend 8 cycles', 'Extend 8 cycles'),
+        ('Extend 9 cycles', 'Extend 9 cycles'),
+        ('Extend 10 cycles', 'Extend 10 cycles'),
         ('Do not extend', 'Do not extend')
     ]
 
@@ -129,9 +136,16 @@ class Prediction(models.Model):
     prediction_value = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
     approximate_persistency = models.FloatField()
-    extend_1_cycle = models.FloatField()
-    extend_2_cycle = models.FloatField()
-    extend_3_cycle = models.FloatField()
+    extend_1_cycle = models.FloatField(default=0)
+    extend_2_cycle = models.FloatField(default=0)
+    extend_3_cycle = models.FloatField(default=0)
+    extend_4_cycle = models.FloatField(default=0)
+    extend_5_cycle = models.FloatField(default=0)
+    extend_6_cycle = models.FloatField(default=0)
+    extend_7_cycle = models.FloatField(default=0)
+    extend_8_cycle = models.FloatField(default=0)
+    extend_9_cycle = models.FloatField(default=0)
+    extend_10_cycle = models.FloatField(default=0)
     days_to_target = models.IntegerField()
     plot_path = models.CharField(max_length=255)
 

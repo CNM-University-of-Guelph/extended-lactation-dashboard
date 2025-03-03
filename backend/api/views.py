@@ -498,6 +498,13 @@ class DataUploadView(APIView):
             extend_1_cycle=extrapolations["extend_1_cycle"],
             extend_2_cycle=extrapolations["extend_2_cycle"],
             extend_3_cycle=extrapolations["extend_3_cycle"],
+            extend_4_cycle=extrapolations["extend_4_cycle"],
+            extend_5_cycle=extrapolations["extend_5_cycle"],
+            extend_6_cycle=extrapolations["extend_6_cycle"],
+            extend_7_cycle=extrapolations["extend_7_cycle"],
+            extend_8_cycle=extrapolations["extend_8_cycle"],
+            extend_9_cycle=extrapolations["extend_9_cycle"],
+            extend_10_cycle=extrapolations["extend_10_cycle"],
             days_to_target=extrapolations["days_to_target"],
             plot_path=extrapolations["plot_path"],
         )
@@ -621,6 +628,27 @@ class DataUploadView(APIView):
             extend_3_cycle = predict_cycle_my(
                 predicted_305_my, approx_persistency, 3
                 )
+            extend_4_cycle = predict_cycle_my(
+                predicted_305_my, approx_persistency, 4
+                )
+            extend_5_cycle = predict_cycle_my(
+                predicted_305_my, approx_persistency, 5
+                )
+            extend_6_cycle = predict_cycle_my(
+                predicted_305_my, approx_persistency, 6
+                )
+            extend_7_cycle = predict_cycle_my(
+                predicted_305_my, approx_persistency, 7
+                )
+            extend_8_cycle = predict_cycle_my(
+                predicted_305_my, approx_persistency, 8
+                )
+            extend_9_cycle = predict_cycle_my(
+                predicted_305_my, approx_persistency, 9
+                )
+            extend_10_cycle = predict_cycle_my(
+                predicted_305_my, approx_persistency, 10
+                )
             
             # Predict days to 20kg/d target
             days_to_target = predict_days_to_target(
@@ -643,6 +671,13 @@ class DataUploadView(APIView):
                 "extend_1_cycle": extend_1_cycle,
                 "extend_2_cycle": extend_2_cycle,
                 "extend_3_cycle": extend_3_cycle,
+                "extend_4_cycle": extend_4_cycle,
+                "extend_5_cycle": extend_5_cycle,
+                "extend_6_cycle": extend_6_cycle,
+                "extend_7_cycle": extend_7_cycle,
+                "extend_8_cycle": extend_8_cycle,
+                "extend_9_cycle": extend_9_cycle,
+                "extend_10_cycle": extend_10_cycle,
                 "days_to_target": days_to_target,
                 "plot_path": plot_path
             }
@@ -707,6 +742,13 @@ class PredictionsListView(APIView):
                 "extend_1_cycle": prediction.extend_1_cycle,
                 "extend_2_cycle": prediction.extend_2_cycle,
                 "extend_3_cycle": prediction.extend_3_cycle,
+                "extend_4_cycle": prediction.extend_4_cycle,
+                "extend_5_cycle": prediction.extend_5_cycle,
+                "extend_6_cycle": prediction.extend_6_cycle,
+                "extend_7_cycle": prediction.extend_7_cycle,
+                "extend_8_cycle": prediction.extend_8_cycle,
+                "extend_9_cycle": prediction.extend_9_cycle,
+                "extend_10_cycle": prediction.extend_10_cycle,
                 "days_to_target": prediction.days_to_target,
             })
         logging.info(f"Returning {len(data)} predictions")

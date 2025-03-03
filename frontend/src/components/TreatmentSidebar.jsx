@@ -11,6 +11,13 @@ function TreatmentSidebar({ isHidden, toggleSidebar, refreshTrigger }) {
         "Extend 1 cycle",
         "Extend 2 cycles",
         "Extend 3 cycles",
+        "Extend 4 cycles",
+        "Extend 5 cycles",
+        "Extend 6 cycles",
+        "Extend 7 cycles",
+        "Extend 8 cycles",
+        "Extend 9 cycles",
+        "Extend 10 cycles",
         "Do not extend"
     ];
 
